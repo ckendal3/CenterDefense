@@ -16,7 +16,7 @@ public class HitSystem : JobComponentSystem
 {
     private CollisionWorld collisionWorld;
     private PhysicsWorld physicsWorld;
-    private EntityQuery m_DetectHitGroup;
+    private EntityQuery m_DetectHitGroup, m_hittableGroup;
     private EntityManager eManager;
 
     [BurstCompile]
@@ -114,31 +114,29 @@ public class HitSystem : JobComponentSystem
         // ---------------------------
         // This can be removed when old physics is gone
         // -----------------------------
-        setupCommandsJob.Complete();
+        //setupCommandsJob.Complete();
 
         NativeArray<Entity> entities = m_DetectHitGroup.ToEntityArray(Allocator.TempJob, out JobHandle entitiesHandle);
 
-        entitiesHandle.Complete();
+        //// Try using batch raycasting
+        //UnityEngine.RaycastHit hit;
+        //for (int i = 0; i < commands.Length; i++)
+        //{
+        //    if (Physics.Raycast(commands[i].from, commands[i].direction, out hit, commands[i].distance))
+        //    {
+        //        if (hit.collider)
+        //        {
+        //            // Hit Something so destroy us
+        //            // Damage whatever it is
+        //            if(hit.collider.GetComponent<Health>())
+        //            {
+        //                hit.collider.GetComponent<Health>().TakeDamage(40);
+        //            }
 
-        // Try using batch raycasting
-        UnityEngine.RaycastHit hit;
-        for (int i = 0; i < commands.Length; i++)
-        {
-            if (Physics.Raycast(commands[i].from, commands[i].direction, out hit, commands[i].distance))
-            {
-                if (hit.collider)
-                {
-                    // Hit Something so destroy us
-                    // Damage whatever it is
-                    if(hit.collider.GetComponent<Health>())
-                    {
-                        hit.collider.GetComponent<Health>().TakeDamage(40);
-                    }
-
-                    EntityManager.SetComponentData(entities[i], new LifeTime { Value = 0});
-                }
-            }
-        }
+        //            EntityManager.SetComponentData(entities[i], new LifeTime { Value = 0});
+        //        }
+        //    }
+        //}
 
         NativeArray<RaycastInput> raycastInputs = new NativeArray<RaycastInput>(commands.Length, Allocator.TempJob);
         JobHandle raysInput = new CreateRayInputsJob
@@ -158,29 +156,48 @@ public class HitSystem : JobComponentSystem
             bools = hitBools
         }.Schedule(raycastInputs.Length, 32, raysInput);
 
+        // We need to have our entities by this point
+        entitiesHandle.Complete();
         castRays.Complete();
 
         Entity hitEntity;
+        float damage;
+        float health;
         for(int i = 0; i < raycastHits.Length; i++)
         {
             hitEntity = physicsWorld.Bodies[raycastHits[i].RigidBodyIndex].Entity;
             if (hitBools[i] == true)
             {
-                // Set projectile data to zero
-                eManager.DestroyEntity(entities[i]);
+                // if the entity is not null
+                if(hitEntity == Entity.Null)
+                {
+                    continue;
+                }
 
-                // Set hit object to dead
-                eManager.DestroyEntity(hitEntity);
-                Debug.Log("ECS HIT");
+                // get their health and damage amounts
+                damage = eManager.GetComponentData<Damage>(entities[i]);
+
+                // Do damage to entity's health
+                if (eManager.HasComponent<WDIB.Components.Health>(hitEntity))
+                {
+                    health = eManager.GetComponentData<WDIB.Components.Health>(hitEntity);
+
+                    eManager.SetComponentData(hitEntity, new WDIB.Components.Health { Value = health - damage });
+                }
+
+
+                // Set projectile life to zero - kill it
+                eManager.SetComponentData(entities[i], new LifeTime { Value = 0 });      
             }
         }
+
+        hitBools.Dispose();
 
         entities.Dispose();
         commands.Dispose();
 
         raycastInputs.Dispose();
         raycastHits.Dispose();
-        hitBools.Dispose();
 
         return JobHandle.CombineDependencies(castRays, inputDeps);
     }
@@ -191,9 +208,8 @@ public class HitSystem : JobComponentSystem
         m_DetectHitGroup = GetEntityQuery(new EntityQueryDesc
         {
             All = new ComponentType[] { ComponentType.ReadOnly<PreviousTranslation>(), ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<Rotation>(), ComponentType.ReadWrite<ProjectileTag>() }
+                ComponentType.ReadOnly<Rotation>(), ComponentType.ReadWrite<ProjectileTag>(), ComponentType.ReadWrite<WDIB.Components.Damage>() }
         });
-
     }
 }
 

@@ -84,7 +84,9 @@ public class ShootSystem : JobComponentSystem
             eManager.SetComponentData(tmp, new LifeTime { Value = 2.5f }); //refactor use a scriptable object to pull data from
             eManager.SetSharedComponentData(tmp, new RenderMesh { mesh = useMesh, material = useMat});
 
-            
+            eManager.SetComponentData(tmp, new WDIB.Components.Damage { Value = 50f }); // grab from projectile sriptable object. - We just need the projectile ID stored
+
+
 #if UNITY_EDITOR
             eManager.SetName(tmp, "Projectile");
 #endif
@@ -92,6 +94,7 @@ public class ShootSystem : JobComponentSystem
             //eManager.AddComponentData(tmp, new ControlledByPlayer { lookPosition = positions[i].Value });
 
             eManager.SetComponentData(entities[i], new TimeBetweenShots { Value = tBetweenShots[i].Value, timeLeft = tBetweenShots[i].Value }); //refactor this could be done in a job
+            
         }
 
         inputs.Dispose();
@@ -125,7 +128,8 @@ public class ShootSystem : JobComponentSystem
                                     ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(), ComponentType.ReadWrite<Scale>(),
                                     ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Owner>(), ComponentType.ReadWrite<PreviousTranslation>(),
                                     ComponentType.ReadWrite<LifeTime>(),
-                                    ComponentType.ReadWrite<RenderMesh>(), ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadOnly<ProjectileTag>() // Needs this (is the overall transform representation) but doesn't have to be "directly" wrote to or read from
+                                    ComponentType.ReadWrite<RenderMesh>(), ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadOnly<ProjectileTag>(),
+                                    ComponentType.ReadWrite<WDIB.Components.Damage>()
                                     );
     }
 }

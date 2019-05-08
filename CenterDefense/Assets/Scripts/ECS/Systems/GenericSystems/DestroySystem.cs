@@ -18,7 +18,7 @@ public class DestroySystem : JobComponentSystem
 
         public void Execute(Entity entity, int index, [ReadOnly] ref LifeTime life)
         {
-            if (life < 0)
+            if (life <= 0)
             {
                 entQueue.Enqueue(entity);
             }
