@@ -97,7 +97,7 @@ public class Converter_Turret : MonoBehaviour
         eManager.AddComponentData(newEnt, new ControlledByPlayer { lookPosition = math.forward(gameObject.transform.rotation) * 100});
         eManager.AddComponentData(newEnt, new InputComponent { InputPosition = new float2(gameObject.transform.position.x, gameObject.transform.position.y), ID = 0, PressedDown = false });
         eManager.AddComponentData(newEnt, new LockAxisRotation { Value = new bool3(false, true, true)}); // lock everything but the x-axis for rotating so it just looks up and down
-        eManager.AddComponentData(newEnt, new ShooterTag { });
+        eManager.AddSharedComponentData(newEnt, new ShooterTag { });
         eManager.AddComponentData(newEnt, new Owner { ID = controlledId });
 
         eManager.AddSharedComponentData(newEnt, new RenderMesh

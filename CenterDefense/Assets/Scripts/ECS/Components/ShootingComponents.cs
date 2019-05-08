@@ -7,7 +7,10 @@ using UnityEngine;
 namespace WDIB.Components
 {
     // this entity has the ability to shoot
-    public struct ShooterTag : IComponentData { }
+    public struct ShooterTag : ISharedComponentData { }
+
+    // This entity is a projectile
+    public struct ProjectileTag : ISharedComponentData { }
 
     // This should just be an offset point?
     public struct ProjectileSpawnPoint : IComponentData

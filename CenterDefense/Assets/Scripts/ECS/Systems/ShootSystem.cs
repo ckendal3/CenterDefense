@@ -125,7 +125,7 @@ public class ShootSystem : JobComponentSystem
                                     ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(), ComponentType.ReadWrite<Scale>(),
                                     ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Owner>(), ComponentType.ReadWrite<PreviousTranslation>(),
                                     ComponentType.ReadWrite<LifeTime>(),
-                                    ComponentType.ReadWrite<RenderMesh>(), ComponentType.ReadOnly<LocalToWorld>() // Needs this (is the overall transform representation) but doesn't have to be "directly" wrote to or read from
+                                    ComponentType.ReadWrite<RenderMesh>(), ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadOnly<ProjectileTag>() // Needs this (is the overall transform representation) but doesn't have to be "directly" wrote to or read from
                                     );
     }
 }
