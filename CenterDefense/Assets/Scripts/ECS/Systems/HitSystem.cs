@@ -91,7 +91,7 @@ public class HitSystem : JobComponentSystem
                     // Damage whatever it is
                     if(hit.collider.GetComponent<Health>())
                     {
-                        hit.collider.GetComponent<Health>().TakeDamage(20);
+                        hit.collider.GetComponent<Health>().TakeDamage(40);
                     }
 
                     EntityManager.SetComponentData(entities[i], new LifeTime { Value = 0});

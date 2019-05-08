@@ -38,13 +38,23 @@ public class ShootSystem : JobComponentSystem
 
         int count = m_gunGroup.CalculateLength();
 
-        NativeArray<InputComponent> inputs = m_gunGroup.ToComponentDataArray<InputComponent>(Allocator.TempJob);
-        NativeArray<Translation> positions = m_gunGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
-        NativeArray<Rotation> rotations = m_gunGroup.ToComponentDataArray<Rotation>(Allocator.TempJob);
-        NativeArray<ProjectileSpawnPoint> projSpawnPoints = m_gunGroup.ToComponentDataArray<ProjectileSpawnPoint>(Allocator.TempJob);
+        NativeArray<InputComponent> inputs = m_gunGroup.ToComponentDataArray<InputComponent>(Allocator.TempJob, out JobHandle inputHandle);
+        NativeArray<Translation> positions = m_gunGroup.ToComponentDataArray<Translation>(Allocator.TempJob, out JobHandle positionsHandle);
+        NativeArray<Rotation> rotations = m_gunGroup.ToComponentDataArray<Rotation>(Allocator.TempJob, out JobHandle rotationsHandle);
+        NativeArray<TimeBetweenShots> tBetweenShots = m_gunGroup.ToComponentDataArray<TimeBetweenShots>(Allocator.TempJob, out JobHandle tBetweenShotsHandle);
+        NativeArray<ProjectileSpawnPoint> projSpawnPoints = m_gunGroup.ToComponentDataArray<ProjectileSpawnPoint>(Allocator.TempJob, out JobHandle projSpawnPointsHandle);
+        NativeArray<Entity> entities = m_gunGroup.ToEntityArray(Allocator.TempJob, out JobHandle entitiesHandle);
+
+        // uh this is really ugly
+        inputHandle.Complete();
+        positionsHandle.Complete();
+        rotationsHandle.Complete();
+        tBetweenShotsHandle.Complete();
+        projSpawnPointsHandle.Complete();
+        entitiesHandle.Complete();
 
         // create all the projectiles 
-        NativeArray<Entity> projectiles = new NativeArray<Entity>(count, Allocator.TempJob);
+        NativeArray <Entity> projectiles = new NativeArray<Entity>(count, Allocator.TempJob);
         eManager.CreateEntity(projectileArch, projectiles);        
 
         Entity tmp;
@@ -52,7 +62,9 @@ public class ShootSystem : JobComponentSystem
         {
             tmp = projectiles[i];
             // if we aren't looking to shoot - don't do stuff
-            if (inputs[i].PressedDown == false)
+            // or
+            // if not enough time between shots has passed - dont do stuff
+            if (inputs[i].PressedDown == false || tBetweenShots[i].timeLeft > 0)
             {
                 eManager.DestroyEntity(tmp);
                 continue;
@@ -72,18 +84,23 @@ public class ShootSystem : JobComponentSystem
             eManager.SetComponentData(tmp, new LifeTime { Value = 2.5f }); //refactor use a scriptable object to pull data from
             eManager.SetSharedComponentData(tmp, new RenderMesh { mesh = useMesh, material = useMat});
 
+            
 #if UNITY_EDITOR
             eManager.SetName(tmp, "Projectile");
 #endif
 
             //eManager.AddComponentData(tmp, new ControlledByPlayer { lookPosition = positions[i].Value });
+
+            eManager.SetComponentData(entities[i], new TimeBetweenShots { Value = tBetweenShots[i].Value, timeLeft = tBetweenShots[i].Value }); //refactor this could be done in a job
         }
 
         inputs.Dispose();
         positions.Dispose();
         rotations.Dispose();
         projSpawnPoints.Dispose();
+        tBetweenShots.Dispose();
         projectiles.Dispose();
+        entities.Dispose();
 
         return inputDeps;
     }
@@ -96,7 +113,8 @@ public class ShootSystem : JobComponentSystem
         {
             // must have these components
             All = new ComponentType[] { ComponentType.ReadOnly<InputComponent>(),ComponentType.ReadOnly<Translation>(),
-                                        ComponentType.ReadOnly<Rotation>(), ComponentType.ReadOnly<ShooterTag>(), ComponentType.ReadOnly<ProjectileSpawnPoint>()}, 
+                                        ComponentType.ReadOnly<Rotation>(), ComponentType.ReadOnly<ShooterTag>(), ComponentType.ReadOnly<ProjectileSpawnPoint>(),
+                                        ComponentType.ReadWrite<TimeBetweenShots>() }, 
 
             // Can have these
             Any = new ComponentType[] { ComponentType.ReadOnly<ControlledByPlayer>() }
