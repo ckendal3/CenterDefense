@@ -64,7 +64,9 @@ public class Convert_GunTurret : MonoBehaviour
         eManager.AddComponentData(newEnt, new LockAxisRotation { Value = new bool3(AxisToLock.x, AxisToLock.y, AxisToLock.z) }); // lock the y-axis, so it only rotates left and right
         eManager.AddComponentData(newEnt, new ProjectileSpawnPoint { Value = projectileSpawnPoint.position });
         eManager.AddComponentData(newEnt, new ShooterTag { } );
-
+#if UNITY_EDITOR
+        eManager.SetName(newEnt, "Turret_Gun");
+#endif
     }
 
     public void DestroySelf()

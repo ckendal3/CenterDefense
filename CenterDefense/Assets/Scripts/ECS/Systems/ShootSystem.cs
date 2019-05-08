@@ -72,6 +72,9 @@ public class ShootSystem : JobComponentSystem
             eManager.SetComponentData(tmp, new LifeTime { Value = 2.5f }); //refactor use a scriptable object to pull data from
             eManager.SetSharedComponentData(tmp, new RenderMesh { mesh = useMesh, material = useMat});
 
+#if UNITY_EDITOR
+            eManager.SetName(tmp, "Projectile");
+#endif
 
             //eManager.AddComponentData(tmp, new ControlledByPlayer { lookPosition = positions[i].Value });
         }

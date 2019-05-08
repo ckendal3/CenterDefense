@@ -60,6 +60,9 @@ public class Convert_TargetFollow : MonoBehaviour
 
         eManager.AddComponentData(newEnt, new LockAxisRotation { Value = new bool3(AxisToLock.x, AxisToLock.y, AxisToLock.z) }); // lock the y-axis, so it only rotates left and right
 
+#if UNITY_EDITOR
+        eManager.SetName(newEnt, "TargetFollower");
+#endif
     }
 
     public void DestroySelf()
