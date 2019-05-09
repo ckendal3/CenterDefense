@@ -4,6 +4,9 @@ using Unity.Mathematics;
 namespace WDIB.Components
 {
 
+    // Marks an entity as a physics entity
+    public struct PhysicsEntityTag : ISharedComponentData { }
+
     // these are the axis to lock and not do operations on
     public struct LockAxisRotation : IComponentData
     {
