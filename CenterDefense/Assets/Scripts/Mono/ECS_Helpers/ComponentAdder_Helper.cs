@@ -1,6 +1,5 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Events;
 using WDIB.Components;
@@ -25,6 +24,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     /// Set the entity's name using the attached gameObject's name
     /// </summary>
     public void EntityName() => eManager.SetName(newEntity, gameObject.name);
+
     /// <summary>
     /// Set the entity's name using a passed in string
     /// </summary>
@@ -77,4 +77,122 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     /// Tag the entity with a PhysicsEntity shared component
     /// </summary>
     public void PhysicsEntityTag() => eManager.AddSharedComponentData(newEntity, new WDIB.Components.PhysicsEntityTag { });
+
+    public void PlayerControlled(int playerID)
+    {
+        eManager.AddComponentData(newEntity, new Owner { ID = (ushort) playerID });
+        eManager.AddComponentData(newEntity, new WDIB.Components.ControlledByPlayer { lookPosition = math.forward(gameObject.transform.rotation) * 100 });
+    }
+
+    public void ShootingComponents(Transform projectileSpawnTransform)
+    {
+        eManager.AddSharedComponentData(newEntity, new ShooterTag { });
+        eManager.AddComponentData(newEntity, new ProjectileSpawnPoint { Value = projectileSpawnTransform.position });
+    }
+
+    public void TimeBetweenShots(float time)
+    {
+        eManager.AddComponentData(newEntity, new TimeBetweenShots { Value = time, timeLeft = time });
+    }
+
+    public void InputComponent(int inputID)
+    {
+        eManager.AddComponentData(newEntity, new InputComponent { InputPosition = new float2(gameObject.transform.position.x, gameObject.transform.position.y), ID = (ushort) inputID, PressedDown = false });
+    }
+
+    #region LockAxisRotation
+    public void LockAxisRotationX()
+    {
+        if (eManager.HasComponent<LockAxisRotation>(newEntity))
+        {
+            bool3 bools = eManager.GetComponentData<LockAxisRotation>(newEntity).Value;
+            bools.x = true;
+
+            eManager.SetComponentData(newEntity, new LockAxisRotation { Value = bools });
+        }
+        else
+        {
+            eManager.AddComponentData(newEntity, new LockAxisRotation { Value = new bool3(true, false, false) });
+        }
+    }
+
+    public void LockAxisRotationY()
+    {
+        if (eManager.HasComponent<LockAxisRotation>(newEntity))
+        {
+            bool3 bools = eManager.GetComponentData<LockAxisRotation>(newEntity).Value;
+            bools.y = true;
+
+            eManager.SetComponentData(newEntity, new LockAxisRotation { Value = bools });
+        }
+        else
+        {
+            eManager.AddComponentData(newEntity, new LockAxisRotation { Value = new bool3(false, true, false) });
+        }
+    }
+
+    public void LockAxisRotationZ()
+    {
+        if (eManager.HasComponent<LockAxisRotation>(newEntity))
+        {
+            bool3 bools = eManager.GetComponentData<LockAxisRotation>(newEntity).Value;
+            bools.z = true;
+
+            eManager.SetComponentData(newEntity, new LockAxisRotation { Value = bools });
+        }
+        else
+        {
+            eManager.AddComponentData(newEntity, new LockAxisRotation { Value = new bool3(false, false, true) });
+        }
+    }
+    #endregion
+
+    #region LockAxisTranslation
+    public void LockAxisTranslationX()
+    {
+        if(eManager.HasComponent<LockAxisTranslation>(newEntity))
+        {
+            bool3 bools = eManager.GetComponentData<LockAxisTranslation>(newEntity).Value;
+            bools.x = true; 
+
+            eManager.SetComponentData(newEntity, new LockAxisTranslation { Value = bools });
+        }
+        else
+        {
+            eManager.AddComponentData(newEntity, new LockAxisTranslation { Value = new bool3(true, false, false) });
+        }
+    }
+
+    public void LockAxisTranslationY()
+    {
+        if (eManager.HasComponent<LockAxisTranslation>(newEntity))
+        {
+            bool3 bools = eManager.GetComponentData<LockAxisTranslation>(newEntity).Value;
+            bools.y = true;
+
+            eManager.SetComponentData(newEntity, new LockAxisTranslation { Value = bools });
+        }
+        else
+        {
+            eManager.AddComponentData(newEntity, new LockAxisTranslation { Value = new bool3(false, true, false) });
+        }
+    }
+
+    public void LockAxisTranslationZ()
+    {
+        if (eManager.HasComponent<LockAxisTranslation>(newEntity))
+        {
+            bool3 bools = eManager.GetComponentData<LockAxisTranslation>(newEntity).Value;
+            bools.z = true;
+
+            eManager.SetComponentData(newEntity, new LockAxisTranslation { Value = bools });
+        }
+        else
+        {
+            eManager.AddComponentData(newEntity, new LockAxisTranslation { Value = new bool3(false, false, true) });
+        }
+    }
+    #endregion
+
 }
+

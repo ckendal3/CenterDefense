@@ -9,11 +9,13 @@ using Unity.Transforms;
 using UnityEngine;
 using WDIB.Components;
 using Unity.Physics;
+using Unity.Physics.Systems;
 
 [UpdateInGroup(typeof(HitSystemGroup))]
 [UpdateAfter(typeof(ShootSystem))]
 public class HitSystem : JobComponentSystem
 {
+    private BuildPhysicsWorld m_BuildPhysicsWorldSystem;
     private CollisionWorld collisionWorld;
     private PhysicsWorld physicsWorld;
     private EntityQuery m_DetectHitGroup, m_hittableGroup;
@@ -60,7 +62,7 @@ public class HitSystem : JobComponentSystem
 
                 Filter = new CollisionFilter()
                 {
-                    CategoryBits = ~0u, // all 1s, so all layers, collide with everything 
+                    CategoryBits = ~5u, //  - 5u is attackables which is our barricades and stuff ~means invert so we hit everything but our attackables
                     MaskBits = ~0u,
                     GroupIndex = 0
                 }
@@ -94,14 +96,22 @@ public class HitSystem : JobComponentSystem
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        eManager = World.Active.EntityManager;
+        // make sure physics world is built
+        m_BuildPhysicsWorldSystem.FinalJobHandle.Complete();
 
         // get the physics and collision world
-        physicsWorld = World.Active.GetOrCreateSystem<Unity.Physics.Systems.BuildPhysicsWorld>().PhysicsWorld;
+        physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
         collisionWorld = physicsWorld.CollisionWorld;
 
         int count = m_DetectHitGroup.CalculateLength();
 
+// do i need this in builds as we know there will be physics bodies?
+//#if UNITY_EDITOR
+        if(count <= 0 || physicsWorld.Bodies.Length <= 0)
+        {
+            return inputDeps;
+        }
+//#endif
         NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(count, Allocator.TempJob);
         var setupCommandsJob = new SetupCommandsJob
         {
@@ -118,6 +128,7 @@ public class HitSystem : JobComponentSystem
 
         NativeArray<Entity> entities = m_DetectHitGroup.ToEntityArray(Allocator.TempJob, out JobHandle entitiesHandle);
 
+        #region Default Physics Raycasting
         //// Try using batch raycasting
         //UnityEngine.RaycastHit hit;
         //for (int i = 0; i < commands.Length; i++)
@@ -137,9 +148,10 @@ public class HitSystem : JobComponentSystem
         //        }
         //    }
         //}
+        #endregion
 
         NativeArray<RaycastInput> raycastInputs = new NativeArray<RaycastInput>(commands.Length, Allocator.TempJob);
-        JobHandle raysInput = new CreateRayInputsJob
+        JobHandle raysInputJob = new CreateRayInputsJob
         {
             inputs = raycastInputs, 
             commands = commands
@@ -154,22 +166,24 @@ public class HitSystem : JobComponentSystem
             hits = raycastHits,
             inputs = raycastInputs,
             bools = hitBools
-        }.Schedule(raycastInputs.Length, 32, raysInput);
+        }.Schedule(raycastInputs.Length, 32, raysInputJob);
 
         // We need to have our entities by this point
         entitiesHandle.Complete();
         castRays.Complete();
 
+        #region Unity.Physics Raycasting
         Entity hitEntity;
         float damage;
         float health;
-        for(int i = 0; i < raycastHits.Length; i++)
+        // make this a job and take out of the main thread
+        for (int i = 0; i < raycastHits.Length; i++)
         {
             hitEntity = physicsWorld.Bodies[raycastHits[i].RigidBodyIndex].Entity;
             if (hitBools[i] == true)
             {
                 // if the entity is not null
-                if(hitEntity == Entity.Null)
+                if (hitEntity == Entity.Null)
                 {
                     continue;
                 }
@@ -187,9 +201,10 @@ public class HitSystem : JobComponentSystem
 
 
                 // Set projectile life to zero - kill it
-                eManager.SetComponentData(entities[i], new LifeTime { Value = 0 });      
+                eManager.SetComponentData(entities[i], new LifeTime { Value = 0 });
             }
         }
+        #endregion
 
         hitBools.Dispose();
 
@@ -204,6 +219,9 @@ public class HitSystem : JobComponentSystem
 
     protected override void OnCreate()
     {
+        eManager = World.Active.EntityManager;
+
+        m_BuildPhysicsWorldSystem = World.Active.GetOrCreateSystem<Unity.Physics.Systems.BuildPhysicsWorld>();
 
         m_DetectHitGroup = GetEntityQuery(new EntityQueryDesc
         {

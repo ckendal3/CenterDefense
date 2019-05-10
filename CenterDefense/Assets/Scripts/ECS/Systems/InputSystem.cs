@@ -126,6 +126,13 @@ public class InputSystem : JobComponentSystem
             {
                 hitPoints[i] = rayHits[i].point;
             }
+
+#if UNITY_EDITOR
+            if (rayHits[i].collider == null)
+            {
+                Debug.LogError("Mouse cast to world hit nothing - make sure there is a floor with correct physics engine collider");
+            }
+#endif
         }
 
         // Apply the position change to those that need it

@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using WDIB.Components;
@@ -21,7 +22,7 @@ public class MovementSystem : JobComponentSystem
     }
 
     [BurstCompile]
-    [ExcludeComponent(typeof(LockAxisTranslation))]
+    [ExcludeComponent(typeof(LockAxisTranslation), typeof(PhysicsEntityTag))]
     public struct MovementJob : IJobForEach<Translation, Rotation, Speed>
     {
         public float deltaTime;
@@ -36,6 +37,7 @@ public class MovementSystem : JobComponentSystem
 
     // fix this tomorrow
     // TODO: IMPLEMENT THIS
+    [ExcludeComponent(typeof(LockAxisTranslation), typeof(PhysicsEntityTag))]
     public struct LockedMovementJob : IJobForEach<Translation, Rotation, Speed, LockAxisTranslation>
     {
         public float deltaTime;
@@ -54,7 +56,7 @@ public class MovementSystem : JobComponentSystem
     // Need a better way to determine this
     // SineMovement bool3? much like LockAxis components
     [BurstCompile]
-    [RequireComponentTag(typeof(SineMovementTag))]
+    [RequireComponentTag(typeof(SineMovementTag), typeof(PhysicsEntityTag))]
     public struct SineMovementJob : IJobForEach<Translation, Rotation, SineMovementFloatiness>
     {
         public float deltaTime;

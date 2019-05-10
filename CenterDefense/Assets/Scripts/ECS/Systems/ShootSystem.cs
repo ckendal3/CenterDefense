@@ -63,7 +63,7 @@ public class ShootSystem : JobComponentSystem
             tmp = projectiles[i];
             // if we aren't looking to shoot - don't do stuff
             // or
-            // if not enough time between shots has passed - dont do stuff
+            // if it does have this component and not enough time between shots has passed - dont do stuff
             if (inputs[i].PressedDown == false || tBetweenShots[i].timeLeft > 0)
             {
                 eManager.DestroyEntity(tmp);
@@ -93,8 +93,7 @@ public class ShootSystem : JobComponentSystem
 
             //eManager.AddComponentData(tmp, new ControlledByPlayer { lookPosition = positions[i].Value });
 
-            eManager.SetComponentData(entities[i], new TimeBetweenShots { Value = tBetweenShots[i].Value, timeLeft = tBetweenShots[i].Value }); //refactor this could be done in a job
-            
+            eManager.SetComponentData(entities[i], new TimeBetweenShots { Value = tBetweenShots[i].Value, timeLeft = tBetweenShots[i].Value }); //refactor this could be done in a job  
         }
 
         inputs.Dispose();
@@ -117,7 +116,8 @@ public class ShootSystem : JobComponentSystem
             // must have these components
             All = new ComponentType[] { ComponentType.ReadOnly<InputComponent>(),ComponentType.ReadOnly<Translation>(),
                                         ComponentType.ReadOnly<Rotation>(), ComponentType.ReadOnly<ShooterTag>(), ComponentType.ReadOnly<ProjectileSpawnPoint>(),
-                                        ComponentType.ReadWrite<TimeBetweenShots>() }, 
+                                        ComponentType.ReadWrite<TimeBetweenShots>()
+                                      }, 
 
             // Can have these
             Any = new ComponentType[] { ComponentType.ReadOnly<ControlledByPlayer>() }

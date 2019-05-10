@@ -77,19 +77,20 @@ public class TargetSystem : JobComponentSystem
     {
         int targetCount = m_targetEntityGroup.CalculateLength();
 
-        targetPositions = m_targetEntityGroup.ToComponentDataArray<Translation>(Allocator.TempJob);
+        targetPositions = m_targetEntityGroup.ToComponentDataArray<Translation>(Allocator.TempJob, out JobHandle targetArrayHandle);
+
+        JobHandle combined = JobHandle.CombineDependencies(targetArrayHandle, inputDeps);
 
         var setupPosJob = new SetupTargetJob
         {
             targetsPos = targetPositions
-        }.Schedule(this, inputDeps);
+        }.Schedule(this, combined);
 
-        setupPosJob.Complete();
 
         var lookPosJob = new TargetPositionJob
         { }.Schedule(this, setupPosJob);
 
-        return JobHandle.CombineDependencies(lookPosJob, setupPosJob, inputDeps);
+        return lookPosJob;
     }
 
     protected override void OnCreate()
