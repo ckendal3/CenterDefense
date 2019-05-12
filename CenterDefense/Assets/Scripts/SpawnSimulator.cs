@@ -24,7 +24,7 @@ public class SpawnSimulator : MonoBehaviour
 
         gameObject.transform.localScale = new Vector3(rScale, rScale, rScale);
 
-        health.maxHealth *= rScale;
+        health.MaxHealth *= rScale;
 
         mRB.speed = 4 - rScale;
     }

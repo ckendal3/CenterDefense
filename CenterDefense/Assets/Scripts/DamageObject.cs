@@ -14,8 +14,17 @@ public class DamageObject : MonoBehaviour
     public float timeBetweenHits = 1;
     private float currentTime;
 
+    private MoveRigidbody moveRB = null;
+
     private void Start()
     {
+        moveRB = gameObject.GetComponent<MoveRigidbody>();
+
+        if(moveRB == null)
+        {
+            Debug.LogWarning("Move Rigidbody is null. - DamageObject");
+        }
+
         timeBetweenHits *= gameObject.transform.localScale.x;
 
         currentTime = timeBetweenHits;
@@ -34,6 +43,9 @@ public class DamageObject : MonoBehaviour
             {
                 isHitting = true;
 
+                moveRB.moveTowards = false;
+                moveRB.enabled = false;
+
                 damageableHealth = tmpHealth;
                 return;
             }
@@ -45,6 +57,9 @@ public class DamageObject : MonoBehaviour
     {
         damageableHealth = null;
 
+        moveRB.enabled = true;
+        moveRB.moveTowards = true;
+        
         currentTime = timeBetweenHits;
     }
 

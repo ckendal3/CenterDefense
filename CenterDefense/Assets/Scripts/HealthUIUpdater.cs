@@ -10,6 +10,6 @@ public class HealthUIUpdater : MonoBehaviour
 
     public void Update()
     {
-        healthText.text = Mathf.Clamp((health.currentHealth/ health.maxHealth) *100, 0, 100).ToString();
+        healthText.text = Mathf.Clamp((health.currentHealth/ health.MaxHealth) *100, 0, 100).ToString();
     }
 }

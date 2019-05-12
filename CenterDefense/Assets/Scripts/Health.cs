@@ -17,7 +17,7 @@ public class Health : MonoBehaviour, IHealth
     [SerializeField]
     public float MaximumHealth = 100;
 
-    public float maxHealth
+    public float MaxHealth
     {
         set
         {
@@ -30,6 +30,7 @@ public class Health : MonoBehaviour, IHealth
             return maxHealth;
         }
     }
+    private float maxHealth;
 
     [HideInInspector]
     public float currentHealth = 100;
@@ -41,7 +42,7 @@ public class Health : MonoBehaviour, IHealth
 
     private void Awake()
     {
-        maxHealth = MaximumHealth;
+        MaxHealth = MaximumHealth;
     }
 
     public void ApplyDamage(float damage)
