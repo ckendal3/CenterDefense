@@ -1,20 +1,65 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
-public class Health : MonoBehaviour
+public interface IHealth
+{
+    bool isAlive { get; }
+
+    void ApplyDamage(float damage);
+
+    void ApplyHealing(float healthRestore);
+}
+
+public class Health : MonoBehaviour, IHealth
 {
     [SerializeField]
-    public float health = 20;
+    public float MaximumHealth = 100;
 
-    public void TakeDamage(float damage)
+    public float maxHealth
+    {
+        set
+        {
+            maxHealth = value;
+            currentHealth = value;
+        }
+
+        get
+        {
+            return maxHealth;
+        }
+    }
+
+    [HideInInspector]
+    public float currentHealth = 100;
+
+    /// <summary>
+    /// Return if the player is Alive based on the current health
+    /// </summary>
+    public bool isAlive { get { return (currentHealth > 0); } }
+
+    private void Awake()
+    {
+        maxHealth = MaximumHealth;
+    }
+
+    public void ApplyDamage(float damage)
     {
         Debug.Log("Taken " + damage + " damage");
-        health -= damage;
+        currentHealth -= damage;
 
-        if(health < 0)
+        if (currentHealth < 0)
         {
             Destroy(gameObject);
         }
+    }
+
+    public void ApplyHealing(float healthRestore)
+    {
+        Debug.Log("Given " + healthRestore + " health");
+        currentHealth += healthRestore;
+
+        math.clamp(currentHealth, 0, maxHealth);
     }
 }

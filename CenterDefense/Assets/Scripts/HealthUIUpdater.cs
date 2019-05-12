@@ -6,10 +6,10 @@ using UnityEngine.UI;
 public class HealthUIUpdater : MonoBehaviour
 {
     public Text healthText;
-    public PlayerHealth pHealth;
+    public Health health;
 
     public void Update()
     {
-        healthText.text = Mathf.Clamp((pHealth.health / pHealth.maxHealth) *100, 0, 100).ToString();
+        healthText.text = Mathf.Clamp((health.currentHealth/ health.maxHealth) *100, 0, 100).ToString();
     }
 }

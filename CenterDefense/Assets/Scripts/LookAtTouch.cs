@@ -95,7 +95,7 @@ public class LookAtTouch : MonoBehaviour
 
             if(healthComp)
             {
-                healthComp.TakeDamage(25);
+                healthComp.ApplyDamage(25);
             }
 
             lR.SetPosition(0, ray.origin);
