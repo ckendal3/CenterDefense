@@ -97,20 +97,20 @@ public class HitSystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         // make sure physics world is built
-        m_BuildPhysicsWorldSystem.FinalJobHandle.Complete();
+        //m_BuildPhysicsWorldSystem.FinalJobHandle.Complete();
 
-        // get the physics and collision world
-        physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
-        collisionWorld = physicsWorld.CollisionWorld;
+        //// get the physics and collision world
+        //physicsWorld = m_BuildPhysicsWorldSystem.PhysicsWorld;
+        //collisionWorld = physicsWorld.CollisionWorld;
 
         int count = m_DetectHitGroup.CalculateLength();
 
-// do i need this in builds as we know there will be physics bodies?
+// do i need this in builds as we know there will be physics bodies? and if its the new UnityPhysics
 //#if UNITY_EDITOR
-        if(count <= 0 || physicsWorld.Bodies.Length <= 0)
-        {
-            return inputDeps;
-        }
+        //if(count <= 0 || physicsWorld.Bodies.Length <= 0)
+        //{
+        //    return inputDeps;
+        //}
 //#endif
         NativeArray<RaycastCommand> commands = new NativeArray<RaycastCommand>(count, Allocator.TempJob);
         var setupCommandsJob = new SetupCommandsJob
@@ -124,104 +124,123 @@ public class HitSystem : JobComponentSystem
         // ---------------------------
         // This can be removed when old physics is gone
         // -----------------------------
-        //setupCommandsJob.Complete();
+        setupCommandsJob.Complete();
 
         NativeArray<Entity> entities = m_DetectHitGroup.ToEntityArray(Allocator.TempJob, out JobHandle entitiesHandle);
+        
+        // Only need this here for default physics
+        entitiesHandle.Complete();
 
         #region Default Physics Raycasting
-        //// Try using batch raycasting
-        //UnityEngine.RaycastHit hit;
-        //for (int i = 0; i < commands.Length; i++)
-        //{
-        //    if (Physics.Raycast(commands[i].from, commands[i].direction, out hit, commands[i].distance))
-        //    {
-        //        if (hit.collider)
-        //        {
-        //            // Hit Something so destroy us
-        //            // Damage whatever it is
-        //            if(hit.collider.GetComponent<Health>())
-        //            {
-        //                hit.collider.GetComponent<Health>().TakeDamage(40);
-        //            }
-
-        //            EntityManager.SetComponentData(entities[i], new LifeTime { Value = 0});
-        //        }
-        //    }
-        //}
-        #endregion
-
-        NativeArray<RaycastInput> raycastInputs = new NativeArray<RaycastInput>(commands.Length, Allocator.TempJob);
-        JobHandle raysInputJob = new CreateRayInputsJob
+        // Try using batch raycasting
+        Health monoHealth;
+        UnityEngine.RaycastHit hit;
+        UnityEngine.Ray ray;
+        for (int i = 0; i < commands.Length; i++)
         {
-            inputs = raycastInputs, 
-            commands = commands
-        }.Schedule(raycastInputs.Length, 32, setupCommandsJob);
+            ray = new UnityEngine.Ray(commands[i].from, commands[i].direction);
 
-        //***********************REFACTOR?***************************
-        NativeArray<Unity.Physics.RaycastHit> raycastHits = new NativeArray<Unity.Physics.RaycastHit>(raycastInputs.Length, Allocator.TempJob);
-        NativeArray<bool> hitBools = new NativeArray<bool>(raycastInputs.Length, Allocator.TempJob);
-        JobHandle castRays = new CastRaysJob
-        {
-            colWorld = collisionWorld, 
-            hits = raycastHits,
-            inputs = raycastInputs,
-            bools = hitBools
-        }.Schedule(raycastInputs.Length, 32, raysInputJob);
-
-        // We need to have our entities by this point
-        entitiesHandle.Complete();
-        castRays.Complete();
-
-        #region Unity.Physics Raycasting
-        Entity hitEntity;
-        float damage;
-        float health;
-        // make this a job and take out of the main thread
-        for (int i = 0; i < raycastHits.Length; i++)
-        {
-            hitEntity = physicsWorld.Bodies[raycastHits[i].RigidBodyIndex].Entity;
-            if (hitBools[i] == true)
+            if (Physics.Raycast(ray, out hit, commands[i].distance, 1 << 9)) //1 << 9 LayerMask.NameToLayer("Enemy")
             {
-                // if the entity is not null
-                if (hitEntity == Entity.Null)
+                if (hit.collider)
                 {
-                    continue;
+                    Debug.Log("HITTTT");
+                    monoHealth = hit.collider.GetComponent<Health>();
+                    // Hit Something so destroy us
+                    // Damage whatever it is
+                    if (hit.collider.GetComponent<Health>())
+                    {
+                        Debug.Log("HEALTHHHH");
+                        hit.collider.GetComponent<Health>().ApplyDamage(40);
+                        monoHealth.ApplyDamage(40); // this needs to be projectile based
+                    }
+                    //Destroy projectiles
+                    EntityManager.SetComponentData(entities[i], new LifeTime { Value = 0 });
                 }
-
-                // get their health and damage amounts
-                damage = eManager.GetComponentData<Damage>(entities[i]);
-
-                // Do damage to entity's health
-                if (eManager.HasComponent<WDIB.Components.Health>(hitEntity))
-                {
-                    health = eManager.GetComponentData<WDIB.Components.Health>(hitEntity);
-
-                    eManager.SetComponentData(hitEntity, new WDIB.Components.Health { Value = health - damage });
-                }
-
-
-                // Set projectile life to zero - kill it
-                eManager.SetComponentData(entities[i], new LifeTime { Value = 0 });
             }
         }
         #endregion
 
-        hitBools.Dispose();
+        //NativeArray<RaycastInput> raycastInputs = new NativeArray<RaycastInput>(commands.Length, Allocator.TempJob);
+        //JobHandle raysInputJob = new CreateRayInputsJob
+        //{
+        //    inputs = raycastInputs, 
+        //    commands = commands
+        //}.Schedule(raycastInputs.Length, 32, setupCommandsJob);
+
+        //***********************REFACTOR?***************************
+        //NativeArray<Unity.Physics.RaycastHit> raycastHits = new NativeArray<Unity.Physics.RaycastHit>(raycastInputs.Length, Allocator.TempJob);
+        //NativeArray<bool> hitBools = new NativeArray<bool>(raycastInputs.Length, Allocator.TempJob);
+        //JobHandle castRays = new CastRaysJob
+        //{
+        //    colWorld = collisionWorld, 
+        //    hits = raycastHits,
+        //    inputs = raycastInputs,
+        //    bools = hitBools
+        //}.Schedule(raycastInputs.Length, 32, raysInputJob);
+
+        // We need to have our entities by this point
+        // entitiesHandle.Complete();
+        //castRays.Complete();
+
+        // do i need this in builds as we know there will be physics bodies? and if its the new UnityPhysics
+        //#if UNITY_EDITOR
+        //if(count <= 0 || physicsWorld.Bodies.Length <= 0)
+        //{
+        //    return inputDeps;
+        //}
+        //#endif
+
+        //#region Unity.Physics Raycasting
+        //Entity hitEntity;
+        //float damage;
+        //float ecsHealth;
+        //// make this a job and take out of the main thread
+        //for (int i = 0; i < raycastHits.Length; i++)
+        //{
+        //    hitEntity = physicsWorld.Bodies[raycastHits[i].RigidBodyIndex].Entity;
+        //    if (hitBools[i] == true)
+        //    {
+        //        // if the entity is not null
+        //        if (hitEntity == Entity.Null)
+        //        {
+        //            continue;
+        //        }
+
+        //        // get their health and damage amounts
+        //        damage = eManager.GetComponentData<Damage>(entities[i]);
+
+        //        // Do damage to entity's health
+        //        if (eManager.HasComponent<WDIB.Components.Health>(hitEntity))
+        //        {
+        //            ecsHealth = eManager.GetComponentData<WDIB.Components.Health>(hitEntity);
+
+        //            eManager.SetComponentData(hitEntity, new WDIB.Components.Health { Value = ecsHealth - damage });
+        //        }
+
+
+        //        // Set projectile life to zero - kill it
+        //        eManager.SetComponentData(entities[i], new LifeTime { Value = 0 });
+        //    }
+        //}
+        //#endregion
+
+        //hitBools.Dispose();
 
         entities.Dispose();
         commands.Dispose();
 
-        raycastInputs.Dispose();
-        raycastHits.Dispose();
+        //raycastInputs.Dispose();
+        //raycastHits.Dispose();
 
-        return JobHandle.CombineDependencies(castRays, inputDeps);
+        return inputDeps; // return JobHandle.CombineDependencies(castRays, inputDeps);
     }
 
     protected override void OnCreate()
     {
         eManager = World.Active.EntityManager;
 
-        m_BuildPhysicsWorldSystem = World.Active.GetOrCreateSystem<Unity.Physics.Systems.BuildPhysicsWorld>();
+        //m_BuildPhysicsWorldSystem = World.Active.GetOrCreateSystem<Unity.Physics.Systems.BuildPhysicsWorld>();
 
         m_DetectHitGroup = GetEntityQuery(new EntityQueryDesc
         {

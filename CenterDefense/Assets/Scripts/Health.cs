@@ -32,7 +32,7 @@ public class Health : MonoBehaviour, IHealth
     }
     private float maxHealth;
 
-    [HideInInspector]
+    //[HideInInspector]
     public float currentHealth = 100;
 
     /// <summary>
@@ -50,7 +50,8 @@ public class Health : MonoBehaviour, IHealth
         Debug.Log("Taken " + damage + " damage");
         currentHealth -= damage;
 
-        if (currentHealth < 0)
+        // if dead
+        if (!isAlive)
         {
             Destroy(gameObject);
         }

@@ -110,7 +110,7 @@ public class InputSystem : JobComponentSystem
         for (int k = 0; k < inputCount; k++)
         {
             inputRays[k] = mainCam.ScreenPointToRay(new Vector2(newInputs[k].InputPosition.x, newInputs[k].InputPosition.y));
-            commands[k] = new RaycastCommand(inputRays[k].origin, inputRays[k].direction, 2000f);
+            commands[k] = new RaycastCommand(inputRays[k].origin, inputRays[k].direction, 2000f, 1 << 13); //LayerMask.NameToLayer("InputCollision")
         }
 
         NativeArray<RaycastHit> rayHits = new NativeArray<RaycastHit>(commands.Length, Allocator.TempJob);
