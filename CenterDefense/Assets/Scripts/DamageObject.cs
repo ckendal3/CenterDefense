@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(MoveRigidbody))]
 public class DamageObject : MonoBehaviour
 {
     [SerializeField]
     public float damageAmount = 20;
     private Health damageableHealth = null;
+    private Collider damageableCollider = null;
 
     private bool isHitting = false;
 
@@ -23,12 +25,6 @@ public class DamageObject : MonoBehaviour
 
     private void Start()
     {
-        if(moveRB == null)
-        {
-            Debug.LogWarning("Move Rigidbody is null. - DamageObject");
-            return;
-        }
-
         timeBetweenHits *= gameObject.transform.localScale.x;
 
         currentTime = timeBetweenHits;
@@ -40,16 +36,17 @@ public class DamageObject : MonoBehaviour
         Health tmpHealth;
         for (int i = 0; i < collision.contactCount; i++)
         {
-            tmpHealth = collision.collider.gameObject.GetComponent<Health>();
+            tmpHealth = collision.collider.GetComponent<Health>();
             
             // only hit the first damageable object we can
             if (tmpHealth != null)
             {
+                Debug.Log("ATTACk");
                 isHitting = true;
 
-                moveRB.moveTowards = false;
                 moveRB.enabled = false;
 
+                damageableCollider = collision.collider;
                 damageableHealth = tmpHealth;
                 return;
             }
@@ -59,15 +56,25 @@ public class DamageObject : MonoBehaviour
     // when we are done overlapping
     private void OnCollisionExit(Collision collision)
     {
-        damageableHealth = null;
-
-        if(moveRB != null)
+        for (int i = 0; i < collision.contactCount; i++)
         {
-            moveRB.enabled = true;
-            moveRB.moveTowards = true;
-        }
+            // colliders are the same - we are no longer damaging an object
+            if (damageableCollider == collision.collider)
+            {
+                damageableHealth = null;
 
-        currentTime = timeBetweenHits;
+                // move to next position
+                if (moveRB != null)
+                {
+                    moveRB.enabled = true;
+                }
+
+                isHitting = false;
+
+                currentTime = timeBetweenHits;
+                return;
+            }
+        }
     }
 
     // called every frame for collision stay

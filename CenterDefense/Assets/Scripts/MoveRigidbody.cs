@@ -10,7 +10,8 @@ public class MoveRigidbody : MonoBehaviour
 
     public float speed = 2f;
 
-    public bool moveTowards = true;
+    // probably do not need this variable anymore
+    public bool moveTowards = false;
 
     void OnEnable()
     {
@@ -22,6 +23,7 @@ public class MoveRigidbody : MonoBehaviour
             return;
         }
 
+        moveTowards = true;
         Debug.Log("Closest Damageable: " + damageableTransform.name);
 
         rBody = gameObject.GetComponent<Rigidbody>();
@@ -30,13 +32,14 @@ public class MoveRigidbody : MonoBehaviour
         AddForceTowardsPlayer();
     }
 
+    public void OnDisable()
+    {
+        rBody.velocity = Vector3.zero;
+        moveTowards = false;
+    }
+
     private void Update()
     {
-        // if we are close enough, destroy ourselves
-        //if(math.distance(gameObject.transform.position, damageableTransform.position) < 1)
-        //{
-        //    Destroy(gameObject);
-        //}
         if(moveTowards)
         {
             LookAtPlayer();
@@ -71,7 +74,7 @@ public class MoveRigidbody : MonoBehaviour
         GameObject closestGO = damageables[0];
         for (int i = 0; i < damageables.Length; i++)
         {
-            // if closest distance is more than new distance - assign new transform
+            // if current closest distance is more than new distance - assign new transform
             if (math.distance(closestGO.transform.position, transform.position) > math.distance(damageables[i].transform.position, transform.position))
             {
                 closestGO = damageables[i];
