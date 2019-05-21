@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 [RequireComponent(typeof(MoveRigidbody))]
@@ -7,8 +8,11 @@ public class DamageObject : MonoBehaviour
 {
     [SerializeField]
     public float damageAmount = 20;
-    private Health damageableHealth = null;
-    private Collider damageableCollider = null;
+    [SerializeField]
+    public float damageDistance = 5f;
+
+    [SerializeField]
+    public LayerMask hitMask;
 
     private bool isHitting = false;
 
@@ -30,70 +34,57 @@ public class DamageObject : MonoBehaviour
         currentTime = timeBetweenHits;
     }
 
-    // when we are starting to overlap
-    private void OnCollisionEnter(Collision collision)
+    private void OnEnable()
     {
-        Health tmpHealth;
-        for (int i = 0; i < collision.contactCount; i++)
-        {
-            tmpHealth = collision.collider.GetComponent<Health>();
-            
-            // only hit the first damageable object we can
-            if (tmpHealth != null)
-            {
-                Debug.Log("ATTACk");
-                isHitting = true;
-
-                moveRB.enabled = false;
-
-                damageableCollider = collision.collider;
-                damageableHealth = tmpHealth;
-                return;
-            }
-        }
+        isHitting = true;
     }
 
-    // when we are done overlapping
-    private void OnCollisionExit(Collision collision)
-    {
-        for (int i = 0; i < collision.contactCount; i++)
-        {
-            // colliders are the same - we are no longer damaging an object
-            if (damageableCollider == collision.collider)
-            {
-                damageableHealth = null;
-
-                // move to next position
-                if (moveRB != null)
-                {
-                    moveRB.enabled = true;
-                }
-
-                isHitting = false;
-
-                currentTime = timeBetweenHits;
-                return;
-            }
-        }
-    }
-
-    // called every frame for collision stay
-    private void OnCollisionStay(Collision collision)
+    private void Update()
     {
         if (isHitting)
         {
             currentTime -= Time.deltaTime;
 
-            if (currentTime < 0 && damageableHealth)
+            if (currentTime < 0)
             {
                 currentTime = timeBetweenHits;
 
-                DamagePlayerNow();
+                CastDamageRay();
             }
         }
     }
 
-    private void DamagePlayerNow()
+
+    private void CastDamageRay()
+    {
+        Ray ray;
+        RaycastHit hit;
+        ray = new Ray
+        {
+            direction = math.forward(gameObject.transform.rotation),
+            origin = gameObject.transform.position
+        };
+
+        Health health;
+        if(Physics.Raycast(ray, out hit, damageDistance + gameObject.transform.localScale.x, hitMask)) // distance plus the size of our object
+        {
+            Debug.Log("Collider hit: " + hit.collider.name);
+
+            health = hit.collider.gameObject.GetComponent<Health>();
+
+            if (health != null)
+            {
+                moveRB.moveTowards = false;
+                DamageHealthObject(health);
+            }
+        }
+        else
+        {
+            moveRB.moveTowards = true;
+        }
+    }
+
+    private void DamageHealthObject(Health damageableHealth)
     {
         damageableHealth.ApplyDamage(gameObject.transform.localScale.x * damageAmount);
     }

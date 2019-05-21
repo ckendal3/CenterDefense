@@ -7,43 +7,53 @@ public class MoveRigidbody : MonoBehaviour
 {
     private Transform damageableTransform;
     private Rigidbody rBody;
+    private DamageObject damageObj;
 
     public float speed = 2f;
 
+    [SerializeField]
+    public LayerMask hitMask;
+
     // probably do not need this variable anymore
-    public bool moveTowards = false;
+    public bool moveTowards = true;
 
-    void OnEnable()
+    private void Awake()
     {
-        damageableTransform = FindClosestDamageable();
-
-        if (damageableTransform == null)
-        {
-            Debug.LogWarning("No damagables in scene - MoveRigibody");
-            return;
-        }
-
-        moveTowards = true;
-        Debug.Log("Closest Damageable: " + damageableTransform.name);
-
         rBody = gameObject.GetComponent<Rigidbody>();
-
-        LookAtPlayer();
-        AddForceTowardsPlayer();
+        damageObj = gameObject.GetComponent<DamageObject>();
     }
 
-    public void OnDisable()
+    private void Start()
+    {
+        FindClosestDamageable();
+
+        damageObj.enabled = false;
+    }
+
+    private void OnDisable()
     {
         rBody.velocity = Vector3.zero;
-        moveTowards = false;
     }
 
     private void Update()
     {
+        CheckHit();
+
+        // lets move towards it
         if(moveTowards)
         {
+            if (damageableTransform == null)
+            {
+                FindClosestDamageable();
+                return;
+            }
+
             LookAtPlayer();
             AddForceTowardsPlayer();
+        }
+        else
+        {
+            rBody.velocity = Vector3.zero;
         }
     }
 
@@ -62,13 +72,18 @@ public class MoveRigidbody : MonoBehaviour
         }
     }
 
-    public Transform FindClosestDamageable()
+    public void FindClosestDamageable()
     {
         GameObject[] damageables = GameObject.FindGameObjectsWithTag("Damageable");
 
+        // if there are no damageables - deactivate?
         if(damageables.Length == 0)
         {
-            return null;
+            Debug.LogWarning("No damagables in scene - MoveRigibody");
+            damageableTransform = null;
+            moveTowards = false;
+            this.enabled = false;
+            return;
         }
 
         GameObject closestGO = damageables[0];
@@ -81,6 +96,38 @@ public class MoveRigidbody : MonoBehaviour
             }
         }
 
-        return closestGO.transform;
+        damageableTransform = closestGO.transform;
+        Debug.Log("Closest Damageable: " + damageableTransform.name);
+    }
+
+    private void CheckHit()
+    {
+        Ray ray;
+        RaycastHit hit;
+        ray = new Ray
+        {
+            direction = math.forward(gameObject.transform.rotation),
+            origin = gameObject.transform.position
+        };
+
+        Health health;
+        if (Physics.Raycast(ray, out hit, 1.5f + gameObject.transform.localScale.x, hitMask))
+        {
+            health = hit.collider.gameObject.GetComponent<Health>();
+
+            if (health != null)
+            {
+                Debug.Log("Hit :" + hit.collider.name);
+
+                moveTowards = false;
+                damageObj.enabled = true;
+            }
+
+        }
+        else
+        {
+            damageObj.enabled = false;
+            moveTowards = true;
+        }
     }
 }

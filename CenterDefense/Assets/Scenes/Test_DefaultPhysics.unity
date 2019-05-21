@@ -1033,7 +1033,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 914135702}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 5
@@ -1383,7 +1383,6 @@ GameObject:
   - component: {fileID: 1792478038}
   - component: {fileID: 1792478037}
   - component: {fileID: 1792478036}
-  - component: {fileID: 1792478035}
   m_Layer: 9
   m_Name: Dummy_Target
   m_TagString: Enemy
@@ -1391,7 +1390,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &1792478035
+--- !u!114 &1792478036
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1400,24 +1399,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1792478034}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5dc05b911d13a044ab800f8dc4ee6394, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destinationPos: {x: 0, y: 1.5, z: 0}
-  speed: 1
---- !u!114 &1792478036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1792478034}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8241f70356b127468ba2b0769a76b97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   damageAmount: 10
+  damageDistance: 1.5
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 1024
   timeBetweenHits: 1
 --- !u!54 &1792478037
 Rigidbody:
@@ -1448,6 +1437,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 1024
   moveTowards: 1
 --- !u!136 &1792478039
 CapsuleCollider:
