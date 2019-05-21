@@ -23,15 +23,25 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     /// <summary>
     /// Set the entity's name using the attached gameObject's name
     /// </summary>
-    public void EntityName() => eManager.SetName(newEntity, gameObject.name);
+    public void EntityName()
+    {
+#if UNITY_EDITOR
+        eManager.SetName(newEntity, gameObject.name);
+#endif
+    }
 
     /// <summary>
     /// Set the entity's name using a passed in string
     /// </summary>
-    public void EntityName(string name) => eManager.SetName(newEntity, name);
-    #endregion
+    public void EntityName(string name)
+    {
+#if UNITY_EDITOR
+        eManager.SetName(newEntity, name);
+#endif
+    }
+#endregion
 
-    #region Targeting
+#region Targeting
     /// <summary>
     /// Indicates this is a target
     /// </summary>
@@ -56,7 +66,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
         eManager.AddComponentData(newEntity, new TargetDynamicPositionTag { });
         eManager.AddComponentData(newEntity, new TargetPosition { Value = transform.position });
     }
-    #endregion
+#endregion
 
     /// <summary>
     /// Set the entity's health component
@@ -100,7 +110,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
         eManager.AddComponentData(newEntity, new InputComponent { InputPosition = new float2(gameObject.transform.position.x, gameObject.transform.position.y), ID = (ushort) inputID, PressedDown = false });
     }
 
-    #region LockAxisRotation
+#region LockAxisRotation
     public void LockAxisRotationX()
     {
         if (eManager.HasComponent<LockAxisRotation>(newEntity))
@@ -145,9 +155,9 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
             eManager.AddComponentData(newEntity, new LockAxisRotation { Value = new bool3(false, false, true) });
         }
     }
-    #endregion
+#endregion
 
-    #region LockAxisTranslation
+#region LockAxisTranslation
     public void LockAxisTranslationX()
     {
         if(eManager.HasComponent<LockAxisTranslation>(newEntity))
@@ -192,7 +202,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
             eManager.AddComponentData(newEntity, new LockAxisTranslation { Value = new bool3(false, false, true) });
         }
     }
-    #endregion
+#endregion
 
 }
 
