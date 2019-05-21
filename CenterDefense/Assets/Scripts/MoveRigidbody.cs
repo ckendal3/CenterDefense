@@ -117,8 +117,6 @@ public class MoveRigidbody : MonoBehaviour
 
             if (health != null)
             {
-                Debug.Log("Hit :" + hit.collider.name);
-
                 moveTowards = false;
                 damageObj.enabled = true;
             }

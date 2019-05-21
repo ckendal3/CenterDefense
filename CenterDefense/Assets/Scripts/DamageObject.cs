@@ -68,8 +68,6 @@ public class DamageObject : MonoBehaviour
         Health health;
         if(Physics.Raycast(ray, out hit, damageDistance + gameObject.transform.localScale.x, hitMask)) // distance plus the size of our object
         {
-            Debug.Log("Collider hit: " + hit.collider.name);
-
             health = hit.collider.gameObject.GetComponent<Health>();
 
             if (health != null)
