@@ -14,6 +14,9 @@ public class MoveRigidbody : MonoBehaviour
     [SerializeField]
     public LayerMask hitMask;
 
+    [SerializeField]
+    public float hitDistance = 1f;
+
     // probably do not need this variable anymore
     public bool moveTowards = true;
 
@@ -111,7 +114,7 @@ public class MoveRigidbody : MonoBehaviour
         };
 
         Health health;
-        if (Physics.Raycast(ray, out hit, 1.5f + gameObject.transform.localScale.x, hitMask))
+        if (Physics.Raycast(ray, out hit, hitDistance, hitMask))
         {
             health = hit.collider.gameObject.GetComponent<Health>();
 

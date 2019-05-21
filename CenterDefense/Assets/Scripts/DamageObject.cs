@@ -66,7 +66,7 @@ public class DamageObject : MonoBehaviour
         };
 
         Health health;
-        if(Physics.Raycast(ray, out hit, damageDistance + gameObject.transform.localScale.x, hitMask)) // distance plus the size of our object
+        if(Physics.Raycast(ray, out hit, damageDistance, hitMask)) // distance plus the size of our object
         {
             health = hit.collider.gameObject.GetComponent<Health>();
 

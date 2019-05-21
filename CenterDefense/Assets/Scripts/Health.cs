@@ -47,7 +47,6 @@ public class Health : MonoBehaviour, IHealth
 
     public void ApplyDamage(float damage)
     {
-        Debug.Log("Taken " + damage + " damage");
         currentHealth -= damage;
 
         // if dead
@@ -59,7 +58,6 @@ public class Health : MonoBehaviour, IHealth
 
     public void ApplyHealing(float healthRestore)
     {
-        Debug.Log("Given " + healthRestore + " health");
         currentHealth += healthRestore;
 
         math.clamp(currentHealth, 0, maxHealth);
