@@ -9,16 +9,27 @@ namespace WDIB.Parameters
 
         public int projectileId = 0;
 
-        public EFiringType firingType = EFiringType.single;
+        public EFiringType firingType = EFiringType.Single;
+
+        // used for single shot and automatic - trigger pull
+        public float timeBetweenShots = .5f;
+
+        // time between rounds in a burst to spawn
+        public float timeBetweenBurstRounds = .2f;
+
+        // Projectiles to spawn per burst
+        public int burstAmount = 2;
 
         // Add ECS Component attaching?
+        // headshot
+        // explosive, etc
     }
 
     public enum EFiringType
     {
-        single, 
-        automatic,
-        burst
+        Single,
+        Burst,
+        Automatic
     }
 
 }

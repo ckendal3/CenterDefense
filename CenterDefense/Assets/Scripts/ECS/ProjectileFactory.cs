@@ -7,6 +7,8 @@ using Unity.Transforms;
 using WDIB.Components;
 
 // Should there be options to pass in the random seed cone or that should be done else where?
+// Fix this to work correctly with the offset - keep(positions[i].Value + math.forward(rotations[i].Value)) then add stuff
+//eManager.SetComponentData(tmp, new Translation { Value = positions[i].Value + (math.forward(rotations[i].Value) * math.distance(projSpawnPoints[i].Value, positions[i].Value)) }); //+ (projSpawnPoints[i].Value + math.forward(rotations[i].Value)) + ) 
 public static class ProjectileFactory
 {
     static EntityManager eManager;
@@ -60,11 +62,10 @@ public static class ProjectileFactory
     {
         NativeArray<Entity> projectileEnts = new NativeArray<Entity>(data.projectilesPerAShot, Allocator.TempJob);
 
-        // creating and destroying entities is batched
+        // batched entity creation
         eManager.CreateEntity(projectileArch, projectileEnts);
 
-        // adding explosion, tracking, or other components go here - just like headshot AddComponent
-
+        // for every projectile to spawn per a shot (think shotgun)
         Entity entity;
         for (int i = 0; i < projectileEnts.Length; i++)
         {
@@ -76,21 +77,17 @@ public static class ProjectileFactory
 #endif
 
             //Generic Components
-            eManager.SetComponentData(entity, new Translation { Value = spawnPos });
-            eManager.SetComponentData(entity, new Rotation { Value = spawnRot });
-            eManager.SetSharedComponentData(entity, new RenderMesh { mesh = data.mesh, material = data.material });
+            eManager.SetComponentData(entity, new Translation { Value = spawnPos + (math.forward(spawnRot) * 2f) });
+            eManager.SetComponentData(entity, new Rotation { Value = spawnRot }); // this should take in a seed for spread of cone or something - could be a burstable job
+            eManager.SetSharedComponentData(entity, new RenderMesh { mesh = data.mesh, material = data.material }); // needs to pull data from the projectile data
 
             // specific components
             eManager.SetComponentData(entity, new PreviousTranslation { Value = spawnPos });
             eManager.SetComponentData(entity, new Damage { Value = data.damage });
             eManager.SetComponentData(entity, new Speed { Value = data.speed });
-
-            //eManager.SetSharedComponentData(entity, new ProjectileID { Value = projectileID });
-            //eManager.SetComponentData(entity, new Owner { ID = ownerID });
-            //eManager.SetComponentData(entity, new Distance { currentValue = 0, maxValue = data.distance });
         }
 
-        //we have set all our data, dispose our native container to avoid memory leak
         projectileEnts.Dispose();
     }
 }
+

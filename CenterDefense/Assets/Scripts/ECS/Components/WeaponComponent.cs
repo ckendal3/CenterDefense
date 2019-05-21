@@ -7,5 +7,7 @@ public struct WeaponComponent : IComponentData
 {
     public int projectileId;
     public int timeBetweenShots;
+
+    public ushort owner;
 }
 
