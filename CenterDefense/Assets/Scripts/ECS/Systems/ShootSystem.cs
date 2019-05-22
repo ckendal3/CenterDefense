@@ -8,6 +8,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using WDIB.Components;
+using WDIB.Parameters;
 
 // update after the turrets turn
 //[UpdateInGroup(typeof(InputSystemGroup))]
@@ -50,9 +51,12 @@ public class ShootSystem : JobComponentSystem
         tBetweenShotsHandle.Complete();
         weaponsHandle.Complete();
 
+        int projectileId; 
         // for every weapon that can shoot - make sure it does
         for(int i = 0; i < weapons.Length; i++)
         {
+            projectileId = WeaponParameters.Instance.GetWeaponData(weapons[i].weaponID).projectileId;
+
             // input isn't down or if not enough time between shots has passed - do nothing
             if (!inputs[i].PressedDown || tBetweenShots[i].timeLeft > 0)
             {
@@ -60,7 +64,7 @@ public class ShootSystem : JobComponentSystem
             }
 
             // create projectile
-            ProjectileFactory.CreateProjectiles(weapons[i].projectileId, positions[i].Value, rotations[i].Value);
+            ProjectileFactory.CreateProjectiles(projectileId, positions[i].Value, rotations[i].Value);
         }
 
         inputs.Dispose();

@@ -50,7 +50,7 @@ public static class ProjectileFactory
         // need to do this just on construction
         Initialize();
 
-        SetComponents(projectileID, spawnPos, spawnRot, WeaponParameters.Instance.projectileSet[projectileID]);
+        SetComponents(projectileID, spawnPos, spawnRot, WeaponParameters.Instance.GetProjectileData(projectileID));
     }
 
     /// <summary>
