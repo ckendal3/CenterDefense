@@ -111,9 +111,9 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
         eManager.AddComponentData(newEntity, new InputComponent { InputPosition = new float2(gameObject.transform.position.x, gameObject.transform.position.y), ID = (ushort) inputID, PressedDown = false });
     }
 
-    public void WeaponComponent(int weaponId)
+    public void WeaponComponent(int weaponId) // maybe use an enum?
     {
-        WeaponData data = WeaponParameters.Instance.GetWeaponData(weaponId);
+        WeaponData data = WeaponParameters.Instance.weaponSet[weaponId];
 
         eManager.AddComponentData(newEntity, new WeaponComponent { weaponID = weaponId, timeSinceLastBurstRound = data.timeBetweenBurstRounds, timeSinceLastShot = 0 });
     }

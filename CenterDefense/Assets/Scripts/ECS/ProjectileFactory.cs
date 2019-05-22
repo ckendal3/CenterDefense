@@ -14,6 +14,8 @@ public static class ProjectileFactory
     static EntityManager eManager;
     static EntityArchetype projectileArch;
 
+    static WeaponParameters wParameters;
+
     // use for debugging
 #if UNITY_EDITOR
     static int projectileGroupID = 0;
@@ -28,8 +30,12 @@ public static class ProjectileFactory
         projectileArch = eManager.CreateArchetype(
                                     ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(), ComponentType.ReadWrite<PreviousTranslation>(),
                                     ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Damage>(),
-                                    ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<RenderMesh>()
+                                    ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<RenderMesh>(),
+                                    ComponentType.ReadWrite<LifeTime>(),//this will be distance in future, 
+                                    ComponentType.ReadOnly<ProjectileTag>()
                                     );
+
+        wParameters = WeaponParameters.Instance;
     }
 
     /// <summary>
@@ -50,7 +56,7 @@ public static class ProjectileFactory
         // need to do this just on construction
         Initialize();
 
-        SetComponents(projectileID, spawnPos, spawnRot, WeaponParameters.Instance.GetProjectileData(projectileID));
+        SetComponents(projectileID, spawnPos, spawnRot, wParameters.projectileSet[projectileID]);
     }
 
     /// <summary>
@@ -85,6 +91,7 @@ public static class ProjectileFactory
             eManager.SetComponentData(entity, new PreviousTranslation { Value = spawnPos });
             eManager.SetComponentData(entity, new Damage { Value = data.damage });
             eManager.SetComponentData(entity, new Speed { Value = data.speed });
+            eManager.SetComponentData(entity, new LifeTime { Value = data.lifeTime });
         }
 
         projectileEnts.Dispose();

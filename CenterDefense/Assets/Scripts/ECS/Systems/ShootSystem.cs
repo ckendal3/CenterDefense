@@ -19,10 +19,6 @@ public class ShootSystem : JobComponentSystem
     private EntityQuery m_gunGroup;
     private EntityManager eManager;
 
-    // Refactor
-    private Mesh useMesh;
-    private Material useMat;
-
     //**********************************************************
     //***********************REFACTOR***************************
     //**********************************************************
@@ -31,11 +27,6 @@ public class ShootSystem : JobComponentSystem
     // ------------
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        // refactor ************************************
-        useMesh = MeshManager.Instance.GetMesh();
-        useMat = MeshManager.Instance.GetMaterial();
-        // *********************************************
-
         int count = m_gunGroup.CalculateLength();
 
         NativeArray<InputComponent> inputs = m_gunGroup.ToComponentDataArray<InputComponent>(Allocator.TempJob, out JobHandle inputHandle);
@@ -55,7 +46,14 @@ public class ShootSystem : JobComponentSystem
         // for every weapon that can shoot - make sure it does
         for(int i = 0; i < weapons.Length; i++)
         {
-            projectileId = WeaponParameters.Instance.GetWeaponData(weapons[i].weaponID).projectileId;
+#if UNITY_EDITOR
+            if(WeaponParameters.Instance == null)
+            {
+                Debug.Log("Weapon Parameters is null");
+                continue;
+            }
+#endif
+            projectileId = WeaponParameters.Instance.weaponSet[weapons[i].weaponID].projectileId;
 
             // input isn't down or if not enough time between shots has passed - do nothing
             if (!inputs[i].PressedDown || tBetweenShots[i].timeLeft > 0)
@@ -65,6 +63,7 @@ public class ShootSystem : JobComponentSystem
 
             // create projectile
             ProjectileFactory.CreateProjectiles(projectileId, positions[i].Value, rotations[i].Value);
+            // Reset time between shots on entity
         }
 
         inputs.Dispose();
