@@ -3,6 +3,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using WDIB.Components;
+using WDIB.Parameters;
 
 [RequireComponent(typeof(ConvertToEntity))]
 public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
@@ -108,6 +109,13 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     public void InputComponent(int inputID)
     {
         eManager.AddComponentData(newEntity, new InputComponent { InputPosition = new float2(gameObject.transform.position.x, gameObject.transform.position.y), ID = (ushort) inputID, PressedDown = false });
+    }
+
+    public void WeaponComponent(int weaponId)
+    {
+        WeaponData data = WeaponParameters.Instance.GetWeaponData(weaponId);
+
+        eManager.AddComponentData(newEntity, new WeaponComponent { weaponID = weaponId, timeSinceLastBurstRound = data.timeBetweenBurstRounds, timeSinceLastShot = 0 });
     }
 
 #region LockAxisRotation
