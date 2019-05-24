@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SingleTurretScene.unity
-    guid: d94298d086ea83743aff71c25389ad46
+    path: Assets/Scenes/Test_DefaultPhysics.unity
+    guid: 8ca2a4464aa1e134186d2d67180467fa
   m_configObjects: {}

@@ -144,13 +144,11 @@ public class HitSystem : JobComponentSystem
             {
                 if (hit.collider)
                 {
-                    Debug.Log("HITTTT");
                     monoHealth = hit.collider.GetComponent<Health>();
                     // Hit Something so destroy us
                     // Damage whatever it is
                     if (hit.collider.GetComponent<Health>())
                     {
-                        Debug.Log("HEALTHHHH");
                         hit.collider.GetComponent<Health>().ApplyDamage(40);
                         monoHealth.ApplyDamage(40); // this needs to be projectile based
                     }
