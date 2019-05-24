@@ -351,7 +351,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 1
       - m_Target: {fileID: 131629006}
-        m_MethodName: ShootingComponents
+        m_MethodName: ProjectileSpawnPoint
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 90952468}
@@ -368,7 +368,7 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0.075
+          m_FloatArgument: 0.1
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 1
@@ -1773,7 +1773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1141669672
 MonoBehaviour:
   m_ObjectHideFlags: 0

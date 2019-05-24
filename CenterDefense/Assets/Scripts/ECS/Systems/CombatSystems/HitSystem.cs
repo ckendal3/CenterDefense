@@ -245,7 +245,7 @@ public class HitSystem : JobComponentSystem
         m_DetectHitGroup = GetEntityQuery(new EntityQueryDesc
         {
             All = new ComponentType[] { ComponentType.ReadOnly<PreviousTranslation>(), ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<Rotation>(), ComponentType.ReadWrite<ProjectileTag>(), ComponentType.ReadWrite<WDIB.Components.Damage>() }
+                ComponentType.ReadOnly<Rotation>(),  ComponentType.ReadWrite<Damage>() }
         });
     }
 }

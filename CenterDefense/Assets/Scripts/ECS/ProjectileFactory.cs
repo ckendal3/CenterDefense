@@ -7,7 +7,6 @@ using Unity.Transforms;
 using WDIB.Components;
 
 // Should there be options to pass in the random seed cone or that should be done else where?
-// Fix this to work correctly with the offset - keep(positions[i].Value + math.forward(rotations[i].Value)) then add stuff
 //eManager.SetComponentData(tmp, new Translation { Value = positions[i].Value + (math.forward(rotations[i].Value) * math.distance(projSpawnPoints[i].Value, positions[i].Value)) }); //+ (projSpawnPoints[i].Value + math.forward(rotations[i].Value)) + ) 
 public static class ProjectileFactory
 {
@@ -31,8 +30,7 @@ public static class ProjectileFactory
                                     ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(), ComponentType.ReadWrite<PreviousTranslation>(),
                                     ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Damage>(),
                                     ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<RenderMesh>(),
-                                    ComponentType.ReadWrite<LifeTime>(),//this will be distance in future, 
-                                    ComponentType.ReadOnly<ProjectileTag>()
+                                    ComponentType.ReadWrite<LifeTime>()//this will be distance in future,
                                     );
 
         wParameters = WeaponParameters.Instance;

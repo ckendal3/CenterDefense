@@ -1,28 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace WDIB.Components
 {
-    // this entity has the ability to shoot
-    public struct ShooterTag : ISharedComponentData { }
-
-    // This entity is a projectile
-    public struct ProjectileTag : ISharedComponentData { }
-
     // This should just be an offset point?
     public struct ProjectileSpawnPoint : IComponentData
     {
-        public float3 Value;
-        //public float3 Heading;
-    }
-
-    public struct DoubleProjectileSpawnPoint : IComponentData
-    {
-        public float3 Position1;
-        public float3 Position2;
+        public float distance; // how far away to spawns
+        public float3 heading;
+        public float3 direction; // the direction
     }
 
     public struct ProjectileSpawnAmount : IComponentData
@@ -31,11 +17,18 @@ namespace WDIB.Components
     }
 
     // Can this be more generic and be used like TimeBetweenActions?
-    // This is how long something has to wait between shots
+    // This is how long something has to wait between shots - like between trigger pulls
     public struct TimeBetweenShots : IComponentData
     {
-        public float Value; // this is the time it resets to every time it shoots
+        public float resetValue; // resets to this value when timeLeft <= 0
         public float timeLeft; // this is the time before it can shoot again
     }
+
+    public struct TimeBetweenBurstShots : IComponentData
+    {
+        public float resetValue; // resets to this value when timeLeft <= 0
+        public float timeLeft; // this is the time before it can shoot again
+    }
+
 
 }

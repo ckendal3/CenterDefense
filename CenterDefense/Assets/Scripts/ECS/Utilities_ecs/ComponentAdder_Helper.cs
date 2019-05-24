@@ -95,22 +95,12 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
         eManager.AddComponentData(newEntity, new WDIB.Components.ControlledByPlayer { lookPosition = math.forward(gameObject.transform.rotation) * 100 });
     }
 
-    public void ShootingComponents(Transform projectileSpawnTransform)
-    {
-        eManager.AddSharedComponentData(newEntity, new ShooterTag { });
-        eManager.AddComponentData(newEntity, new ProjectileSpawnPoint { Value = projectileSpawnTransform.position });
-    }
-
-    public void TimeBetweenShots(float time)
-    {
-        eManager.AddComponentData(newEntity, new TimeBetweenShots { Value = time, timeLeft = time });
-    }
-
     public void InputComponent(int inputID)
     {
         eManager.AddComponentData(newEntity, new InputComponent { InputPosition = new float2(gameObject.transform.position.x, gameObject.transform.position.y), ID = (ushort) inputID, PressedDown = false });
     }
 
+    #region Combat
     public void WeaponComponent(int weaponId) // maybe use an enum?
     {
         WeaponData data = WeaponParameters.Instance.weaponSet[weaponId];
@@ -118,7 +108,25 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
         eManager.AddComponentData(newEntity, new WeaponComponent { weaponID = weaponId, timeSinceLastBurstRound = data.timeBetweenBurstRounds, timeSinceLastShot = 0 });
     }
 
-#region LockAxisRotation
+    public void ProjectileSpawnPoint(Transform projectileSpawnTransform)
+    {
+        Vector3 spawnHeading = projectileSpawnTransform.position - gameObject.transform.position;
+        float spawnDistance = spawnHeading.magnitude;
+
+        eManager.AddComponentData(newEntity, new ProjectileSpawnPoint {
+                                                                        distance = spawnDistance,
+                                                                        heading = spawnHeading,
+                                                                        direction = spawnHeading / spawnDistance
+        });
+    }
+
+    public void TimeBetweenShots(float time)
+    {
+        eManager.AddComponentData(newEntity, new TimeBetweenShots { resetValue = time, timeLeft = 0 });
+    }
+    #endregion
+
+    #region LockAxisRotation
     public void LockAxisRotationX()
     {
         if (eManager.HasComponent<LockAxisRotation>(newEntity))
