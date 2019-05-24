@@ -42,4 +42,11 @@ namespace WDIB.Components
             return speed.Value;
         }
     }
+
+    public struct Distance : IComponentData
+    {
+        public float distanceTravelled;
+        public float maxAllowedDistance;
+    }
+
 }

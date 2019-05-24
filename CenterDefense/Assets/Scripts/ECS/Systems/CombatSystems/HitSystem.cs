@@ -153,7 +153,7 @@ public class HitSystem : JobComponentSystem
                         monoHealth.ApplyDamage(40); // this needs to be projectile based
                     }
                     //Destroy projectiles
-                    EntityManager.SetComponentData(entities[i], new LifeTime { Value = 0 });
+                    EntityManager.SetComponentData(entities[i], new Distance { distanceTravelled = 1000, maxAllowedDistance = 0 });
                 }
             }
         }
@@ -243,7 +243,7 @@ public class HitSystem : JobComponentSystem
         m_DetectHitGroup = GetEntityQuery(new EntityQueryDesc
         {
             All = new ComponentType[] { ComponentType.ReadOnly<PreviousTranslation>(), ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<Rotation>(),  ComponentType.ReadWrite<Damage>() }
+                ComponentType.ReadOnly<Rotation>(),  ComponentType.ReadWrite<Damage>(), ComponentType.ReadWrite<Distance>()}
         });
     }
 }

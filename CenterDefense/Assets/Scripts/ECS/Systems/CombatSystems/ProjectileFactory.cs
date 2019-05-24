@@ -30,7 +30,7 @@ public static class ProjectileFactory
                                     ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(), ComponentType.ReadWrite<PreviousTranslation>(),
                                     ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Damage>(),
                                     ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<RenderMesh>(),
-                                    ComponentType.ReadWrite<LifeTime>()//this will be distance in future,
+                                    ComponentType.ReadWrite<Distance>()
                                     );
 
         wParameters = WeaponParameters.Instance;
@@ -89,7 +89,7 @@ public static class ProjectileFactory
             eManager.SetComponentData(entity, new PreviousTranslation { Value = spawnPos });
             eManager.SetComponentData(entity, new Damage { Value = data.damage });
             eManager.SetComponentData(entity, new Speed { Value = data.speed });
-            eManager.SetComponentData(entity, new LifeTime { Value = data.lifeTime });
+            eManager.SetComponentData(entity, new Distance { distanceTravelled = 0, maxAllowedDistance = data.maxDistance });
         }
 
         projectileEnts.Dispose();
