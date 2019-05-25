@@ -2,9 +2,10 @@
 
 namespace WDIB.Parameters
 {
-    [CreateAssetMenu(fileName = "Projectile", menuName = "WDIB/Projectiles")]
+    [CreateAssetMenu(fileName = "Projectile Data", menuName = "WDIB/Data/Projectile")]
     public class ProjectileData : ScriptableObject
     {
+        [Tooltip("Name of the Projectiles")]
         public string projectileName = "Default";
 
         // How many projectile to spawn per a shot
