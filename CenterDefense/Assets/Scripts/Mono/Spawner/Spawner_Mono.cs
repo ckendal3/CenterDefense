@@ -34,6 +34,8 @@ public class Spawner_Mono : MonoBehaviour
 
     void Update()
     {
+        timeTillNextSpawn -= Time.deltaTime;
+
         if(timeTillNextSpawn <= 0 && spawnEnemies == true)
         {
             timeTillNextSpawn = timeBetweenSpawns;
