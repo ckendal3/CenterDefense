@@ -141,6 +141,7 @@ public class InputSystem : JobComponentSystem
             lookAtPositions = hitPoints
         }.Schedule(this, batchJob);
 
+
         // Make sure we finish
         applyInputJob.Complete();
 
