@@ -105,7 +105,10 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     {
         WeaponData data = WeaponParameters.Instance.weaponSet[weaponId];
 
-        eManager.AddComponentData(newEntity, new WeaponComponent { weaponID = weaponId, timeSinceLastBurstRound = data.timeBetweenBurstRounds, timeSinceLastShot = 0 });
+        eManager.AddComponentData(newEntity, new WeaponComponent {
+                                                                    weaponID = weaponId, timeSinceLastBurstRound = data.timeBetweenBurstRounds, timeSinceLastShot = 0,
+                                                                    input = new WeaponInput { bReload = false, bShoot = false }
+                                                                });
     }
 
     public void ProjectileSpawnPoint(Transform projectileSpawnTransform)

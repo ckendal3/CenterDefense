@@ -29,15 +29,13 @@ public class ShootSystem : JobComponentSystem
     {
         int count = m_gunGroup.CalculateLength();
 
-        NativeArray<InputComponent> inputs = m_gunGroup.ToComponentDataArray<InputComponent>(Allocator.TempJob, out JobHandle inputHandle);
         NativeArray<Translation> positions = m_gunGroup.ToComponentDataArray<Translation>(Allocator.TempJob, out JobHandle positionsHandle);
         NativeArray<Rotation> rotations = m_gunGroup.ToComponentDataArray<Rotation>(Allocator.TempJob, out JobHandle rotationsHandle);
         NativeArray<TimeBetweenShots> tBetweenShots = m_gunGroup.ToComponentDataArray<TimeBetweenShots>(Allocator.TempJob, out JobHandle tBetweenShotsHandle);
-        NativeArray<WeaponComponent> weapons = m_gunGroup.ToComponentDataArray<WeaponComponent>(Allocator.TempJob, out JobHandle weaponsHandle);
+        NativeArray<WeaponComponent> weaponComponents = m_gunGroup.ToComponentDataArray<WeaponComponent>(Allocator.TempJob, out JobHandle weaponsHandle);
         NativeArray<Entity> entities = m_gunGroup.ToEntityArray(Allocator.TempJob, out JobHandle entitiesHandle);
 
         // uh this is really ugly
-        inputHandle.Complete();
         positionsHandle.Complete();
         rotationsHandle.Complete();
         tBetweenShotsHandle.Complete();
@@ -47,7 +45,7 @@ public class ShootSystem : JobComponentSystem
         int projectileId;
         float timeResetValue;
         // for every weapon that can shoot - make sure it does
-        for(int i = 0; i < weapons.Length; i++)
+        for(int i = 0; i < weaponComponents.Length; i++)
         {
 #if UNITY_EDITOR
             if(WeaponParameters.Instance == null)
@@ -56,11 +54,11 @@ public class ShootSystem : JobComponentSystem
                 continue;
             }
 #endif
-            projectileId = WeaponParameters.Instance.weaponSet[weapons[i].weaponID].projectileId;
+            projectileId = WeaponParameters.Instance.weaponSet[weaponComponents[i].weaponID].projectileId;
             timeResetValue = tBetweenShots[i].resetValue;
 
             // input isn't down or if not enough time between shots has passed - do nothing
-            if (!inputs[i].PressedDown || tBetweenShots[i].timeLeft > 0)
+            if (!weaponComponents[i].input.bShoot || tBetweenShots[i].timeLeft > 0)
             {
                 continue;
             }
@@ -71,11 +69,10 @@ public class ShootSystem : JobComponentSystem
             eManager.SetComponentData(entities[i], new TimeBetweenShots { resetValue = timeResetValue, timeLeft = timeResetValue });
         }
 
-        inputs.Dispose();
         positions.Dispose();
         rotations.Dispose();
         tBetweenShots.Dispose();
-        weapons.Dispose();
+        weaponComponents.Dispose();
         entities.Dispose();
 
         return inputDeps;
@@ -88,9 +85,9 @@ public class ShootSystem : JobComponentSystem
         m_gunGroup = GetEntityQuery(new EntityQueryDesc
         {
             // must have these components
-            All = new ComponentType[] { ComponentType.ReadOnly<InputComponent>(),ComponentType.ReadOnly<Translation>(),
-                                        ComponentType.ReadOnly<Rotation>(), ComponentType.ReadOnly<ProjectileSpawnPoint>(),
-                                        ComponentType.ReadWrite<TimeBetweenShots>(), ComponentType.ReadOnly<WeaponComponent>()
+            All = new ComponentType[] { ComponentType.ReadOnly<Translation>(), ComponentType.ReadOnly<Rotation>(),
+                                         ComponentType.ReadOnly<ProjectileSpawnPoint>(), ComponentType.ReadWrite<TimeBetweenShots>(),
+                                         ComponentType.ReadOnly<WeaponComponent>()
                                       }, 
 
             // Can have these
