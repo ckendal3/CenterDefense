@@ -176,7 +176,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     }
 #endregion
 
-#region LockAxisTranslation
+    #region LockAxisTranslation
     public void LockAxisTranslationX()
     {
         if(eManager.HasComponent<LockAxisTranslation>(newEntity))
@@ -221,7 +221,5 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
             eManager.AddComponentData(newEntity, new LockAxisTranslation { Value = new bool3(false, false, true) });
         }
     }
-#endregion
-
+    #endregion
 }
-
