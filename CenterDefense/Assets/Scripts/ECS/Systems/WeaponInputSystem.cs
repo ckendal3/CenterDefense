@@ -11,27 +11,23 @@ using WDIB.Components;
 [UpdateAfter(typeof(InputSystem))]
 public class WeaponInputSystem : JobComponentSystem
 {
-    private EntityQuery m_WeaponInputGroup, m_InputGroup;
+    private EntityQuery m_InputGroup;
 
-    public struct ApplyWeaponInputJob : IJobParallelFor
+    public struct ApplyWeaponInputsJob : IJobForEach<WeaponComponent, Owner>
     {
-        [DeallocateOnJobCompletion]
-        public NativeArray<WeaponComponent> weaponComponents;
-        [DeallocateOnJobCompletion]
-        [ReadOnly] public NativeArray<Owner> owners;
         [DeallocateOnJobCompletion]
         [ReadOnly] public NativeArray<InputComponent> inputs;
 
-        public void Execute(int index)
+        public void Execute(ref WeaponComponent weaponComponent, ref Owner owner)
         {
-            WeaponComponent tmpInput = weaponComponents[index];
+            WeaponComponent tmpInput = weaponComponent;
 
             // find the correct input based on ID and apply it to the weapon
             for (int i = 0; i < inputs.Length; i++)
             {
-                if (owners[index].ID == inputs[i].ID)
+                if (owner.ID == inputs[i].ID)
                 {
-                    weaponComponents[index] = new WeaponComponent
+                    weaponComponent = new WeaponComponent
                     {
                         weaponID = tmpInput.weaponID,
                         timeSinceLastBurstRound = tmpInput.timeSinceLastBurstRound,
@@ -45,25 +41,16 @@ public class WeaponInputSystem : JobComponentSystem
 
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
-        int count = m_WeaponInputGroup.CalculateLength();
-
-        JobHandle weaponInputJob = new ApplyWeaponInputJob
+        JobHandle weaponInputJob = new ApplyWeaponInputsJob
         {
-            weaponComponents = m_WeaponInputGroup.ToComponentDataArray<WeaponComponent>(Allocator.TempJob),
-            owners = m_WeaponInputGroup.ToComponentDataArray<Owner>(Allocator.TempJob), 
-            inputs = m_InputGroup.ToComponentDataArray<InputComponent>(Allocator.TempJob),
-        }.Schedule(count, 1, inputDeps);
+            inputs = m_InputGroup.ToComponentDataArray<InputComponent>(Allocator.TempJob)
+        }.Schedule(this, inputDeps);
 
         return weaponInputJob;
     }
 
     protected override void OnCreate()
     {
-        m_WeaponInputGroup = GetEntityQuery(new EntityQueryDesc
-        {
-            All = new ComponentType[] { ComponentType.ReadWrite<WeaponComponent>(), ComponentType.ReadOnly<Owner>() }
-        });
-
         m_InputGroup = GetEntityQuery(new EntityQueryDesc
         {
             All = new ComponentType[] { ComponentType.ReadWrite<InputComponent>() }
