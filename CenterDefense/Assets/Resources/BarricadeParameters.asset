@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158441fd1ad054645ae278239f75e547, type: 3}
   m_Name: BarricadeParameters
   m_EditorClassIdentifier: 
-  barricadeSets: []
+  barricadeSets:
+  - {fileID: 11400000, guid: d68a1e08f91761d46a12e1495db42176, type: 2}
