@@ -11,24 +11,20 @@ public class DamageObject : MonoBehaviour
     [SerializeField]
     public float damageDistance = 5f;
 
-    [SerializeField]
     public LayerMask hitMask;
 
     private bool isHitting = false;
 
     [SerializeField]
     public float timeBetweenHits = 1;
-    private float currentTime;
+    private float currentTime = 0;
 
     private MoveRigidbody moveRB = null;
 
-    private void Awake()
-    {
-        moveRB = gameObject.GetComponent<MoveRigidbody>();
-    }
-
     private void Start()
     {
+        moveRB = gameObject.GetComponent<MoveRigidbody>();
+
         timeBetweenHits *= gameObject.transform.localScale.x;
 
         currentTime = timeBetweenHits;

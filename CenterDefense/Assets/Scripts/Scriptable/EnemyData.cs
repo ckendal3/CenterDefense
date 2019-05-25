@@ -8,10 +8,18 @@ namespace WDIB.Parameters
     public class EnemyData : ScriptableObject
     {
         [Tooltip("The name of the enemy type")]
+        [SerializeField]
         public string enemyName = "Default Enemy";
 
         [Tooltip("The amount of damage on attack.")]
+        [SerializeField]
         public EnemyStats stats;
+
+        [Tooltip("Mesh to use")]
+        public Mesh mesh;
+
+        [Tooltip("Material to use")]
+        public Material material;
     }
 
     [System.Serializable]

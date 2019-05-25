@@ -5,6 +5,8 @@ using WDIB.Parameters;
 
 public class GameData : MonoBehaviour
 {
+    private int stageIndex = 0;
+
     [SerializeField]
     public StageData stageData;
 
@@ -13,11 +15,24 @@ public class GameData : MonoBehaviour
 
     private void Awake()
     {
+#if UNITY_EDITOR
+        ApplyDefaultStage();
+#else
         ApplyNewStageData();
+#endif
     }
 
-    public void ApplyNewStageData()
+#if UNITY_EDITOR
+    public void ApplyDefaultStage()
     {
+        stageIndex += 1;
+        stageData = StageParameters.Instance.defaultStage;
+    }
+#endif
 
+    public void ApplyNewStageData(int index)
+    {
+        stageIndex += 1;
+        stageData = StageParameters.Instance.stageSet[index];
     }
 }
