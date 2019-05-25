@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36307815d04f1a8449d6759f06e66d71, type: 3}
+  m_Name: StageParameters
+  m_EditorClassIdentifier: 
+  defaultStage: {fileID: 11400000, guid: bcfa87d8e8d79344c99f8c48d1bb2387, type: 2}
+  stageSet:
+  - {fileID: 11400000, guid: 0afb7c0a0c93c9f49b42049ece031cef, type: 2}
+  - {fileID: 11400000, guid: bcfa87d8e8d79344c99f8c48d1bb2387, type: 2}
