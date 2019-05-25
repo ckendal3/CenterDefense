@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2b5193128418904790b2eaad8357031, type: 3}
   m_Name: TurretParameters
   m_EditorClassIdentifier: 
-  turretSets: []
+  turretSets:
+  - {fileID: 11400000, guid: 75c1a2541ccc6f7439213f52af372431, type: 2}

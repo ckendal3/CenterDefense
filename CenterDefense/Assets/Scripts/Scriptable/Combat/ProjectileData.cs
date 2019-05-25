@@ -13,7 +13,7 @@ namespace WDIB.Parameters
         public int projectilesPerAShot = 1;
 
         // How far before the projectile should destroy
-        [Range(0f, 5000f)]
+        [Range(0f, 1000f)]
         public float maxDistance = 1000f;
 
         [Range(0f, 500f)]

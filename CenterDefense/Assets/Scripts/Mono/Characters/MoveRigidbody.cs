@@ -20,14 +20,11 @@ public class MoveRigidbody : MonoBehaviour
     // probably do not need this variable anymore
     public bool moveTowards = true;
 
-    private void Awake()
+    private void Start()
     {
         rBody = gameObject.GetComponent<Rigidbody>();
         damageObj = gameObject.GetComponent<DamageObject>();
-    }
 
-    private void Start()
-    {
         FindClosestDamageable();
 
         damageObj.enabled = false;

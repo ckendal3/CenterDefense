@@ -15,6 +15,6 @@ MonoBehaviour:
   weaponName: Default
   projectileId: 0
   firingType: 0
-  timeBetweenShots: 0.25
+  timeBetweenShots: 0.29
   timeBetweenBurstRounds: 0.1
   burstAmount: 3

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileName: Default
   projectilesPerAShot: 1
-  maxDistance: 22
+  maxDistance: 200
   damage: 25
-  speed: 29
+  speed: 11
   mesh: {fileID: 2298794039524342105, guid: f84ff08835fb7e1439eb674d12642da9, type: 3}
   material: {fileID: 2100000, guid: aee18da263ea64147b696ae58d79677f, type: 2}
