@@ -8,6 +8,15 @@ public class GameManager : MonoBehaviour
     private int stageIndex = 1;
 
     [SerializeField]
+    public float delayBetweenStages = 1f;
+    private float timeTillNextRound = 5f;
+
+    public delegate void StageOver(EStageStatus status);
+    public static StageOver stageOverEvent;
+
+    private bool startStage = true;
+
+    [SerializeField]
     public GameObject TurretObject;
     public GameObject BarricadeObject;
 
@@ -27,6 +36,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        stageOverEvent += StageStatusChange;
+
         StartNewStage();
     }
 
@@ -46,9 +57,10 @@ public class GameManager : MonoBehaviour
 //#endif
             }
         }
-        else if (spawnerObject == null)
+        else if (timeTillNextRound <= 0 && startStage == true)
         {
             StartNewStage();
+            startStage = false;
         }
     }
 
@@ -56,18 +68,45 @@ public class GameManager : MonoBehaviour
     {
         SpawnObject();
         stageIndex += 1;
+
+        timeTillNextRound = delayBetweenStages;
+
+        stageOverEvent?.Invoke(EStageStatus.start);
     }
 
     private void SpawnObject()
     {
         if(spawnerObject != null)
         {
-            Destroy(spawnerObject);
+            return;
         }
-        Spawner_Mono spawner;
 
+        Spawner_Mono spawner;
 
         spawnerObject = new GameObject("Spawner");
         spawnerObject.AddComponent<Spawner_Mono>().Initialize(stageIndex, spawnVolumes);
     }
+
+    private void StageStatusChange(EStageStatus status)
+    {
+        switch (status)
+        {
+            case EStageStatus.start:
+                StartNewStage();
+                startStage = true;
+                break;
+            case EStageStatus.inprogress:
+                break;
+            case EStageStatus.over:
+                break;
+        }
+    }
+
+}
+
+public enum EStageStatus
+{
+    start,
+    inprogress,
+    over
 }

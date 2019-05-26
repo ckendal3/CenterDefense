@@ -13,9 +13,9 @@ public class StageSystem : JobComponentSystem
     {
         int enemyCount = m_EnemyGroup.CalculateLength();
 
-        if(enemyCount > 0)
+        if(enemyCount <= 0)
         {
-            Debug.Log("Enemy Count: " + enemyCount);
+            GameManager.stageOverEvent?.Invoke(EStageStatus.over);
         }
 
         return inputDeps;
@@ -27,5 +27,4 @@ public class StageSystem : JobComponentSystem
             All = new ComponentType[] { ComponentType.ReadOnly<EnemyTag>() }
         });
     }
-
 }

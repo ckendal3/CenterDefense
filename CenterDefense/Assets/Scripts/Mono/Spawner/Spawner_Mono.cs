@@ -21,12 +21,37 @@ public class Spawner_Mono : MonoBehaviour
 
     private BoxCollider[] colliders;
 
+    private void Awake()
+    {
+        GameManager.stageOverEvent += StageStatusChange;
+    }
+
     public void Initialize(int stageIndex, BoxCollider[] bColliders)
     {
         index = stageIndex;
 
-        stageData = StageParameters.Instance.stageSet[index];
         colliders = bColliders;
+
+        isInitialized = true;
+    }
+
+    public void StageStatusChange(EStageStatus status)
+    {
+        switch (status)
+        {
+            case EStageStatus.start:
+                StartNewStage();
+                break;
+            case EStageStatus.inprogress:
+                break;
+            case EStageStatus.over:
+                break;
+        }
+    }
+
+    public void StartNewStage()
+    {
+        stageData = StageParameters.Instance.stageSet[index];
 
         if (stageData == null)
         {
@@ -34,15 +59,13 @@ public class Spawner_Mono : MonoBehaviour
         }
 
         timeBetweenSpawns = stageData.enemySpawnData.enemySpawnRate;
-
+        timeTillNextSpawn = timeBetweenSpawns;
         spawnLimit = stageData.enemySpawnData.maxEnemySpawnCount;
 
         // initial spawn amount
         SpawnEnemies(stageData.enemySpawnData.initialEnemySpawnAmount, stageData.enemySpawnData);
 
-        isInitialized = true;
-
-        Debug.Log("Stage: " + index);
+        index += 1;
     }
 
     void Update()
@@ -52,7 +75,6 @@ public class Spawner_Mono : MonoBehaviour
             return;
         }
 
-
         timeTillNextSpawn -= Time.deltaTime;
 
         if(timeTillNextSpawn <= 0 && spawnEnemies == true)
@@ -61,14 +83,7 @@ public class Spawner_Mono : MonoBehaviour
 
             SpawnEnemies(stageData.enemySpawnData.enemiesPerASpawn, stageData.enemySpawnData);
         }
-
-        if(spawnCount >= spawnLimit)
-        {
-            Debug.Log("Destroying spawner");
-            Destroy(gameObject);
-        }
     }
-
 
     private void SpawnEnemies(int spawnAmount, EnemySpawnData data)
     {
@@ -158,4 +173,5 @@ public class Spawner_Mono : MonoBehaviour
             Random.Range(bounds.min.z, bounds.max.z)
         );
     }
+    
 }
