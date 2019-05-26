@@ -25,10 +25,13 @@ MonoBehaviour:
     spawnChance:
     - enemyType: 0
       spawnChance: 0.1
+      enemyData: {fileID: 11400000, guid: 6ba5095068dfe1a458c0997fc0b94e17, type: 2}
     - enemyType: 1
       spawnChance: 0.65
+      enemyData: {fileID: 11400000, guid: f4dc01cc277c98d44b71f86a8df17fc2, type: 2}
     - enemyType: 2
       spawnChance: 0.25
+      enemyData: {fileID: 11400000, guid: 7b4772bb39db4b446a86777f8420aeba, type: 2}
   multiplierData:
     stageRewardMultiplier: 1
     enemyDifficultyMultiplier: 1

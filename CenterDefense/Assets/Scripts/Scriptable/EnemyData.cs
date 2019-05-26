@@ -53,7 +53,7 @@ namespace WDIB.Parameters
         public float damage;
 
         [Tooltip("The time between attacks.")]
-        [Range(1, 200)]
+        [Range(.001f, 5f)]
         public float attackRate;
 
         [Tooltip("The enemies health.")]
@@ -61,7 +61,7 @@ namespace WDIB.Parameters
         public float health;
 
         [Tooltip("How fast the enemy moves per a second.")]
-        [Range(1, 20)]
+        [Range(.1f, 20f)]
         public float speed;
     }
 

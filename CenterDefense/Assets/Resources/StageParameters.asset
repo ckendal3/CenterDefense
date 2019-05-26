@@ -14,5 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   defaultStage: {fileID: 11400000, guid: bcfa87d8e8d79344c99f8c48d1bb2387, type: 2}
   stageSet:
-  - {fileID: 11400000, guid: 0afb7c0a0c93c9f49b42049ece031cef, type: 2}
   - {fileID: 11400000, guid: bcfa87d8e8d79344c99f8c48d1bb2387, type: 2}
+  - {fileID: 11400000, guid: 0afb7c0a0c93c9f49b42049ece031cef, type: 2}
+  - {fileID: 11400000, guid: 4e9c167bb08b95f4aa22c9303be4b66d, type: 2}
+  - {fileID: 11400000, guid: a744dca1efc77874dba9df30645dc42a, type: 2}
+  - {fileID: 11400000, guid: a2c02cde224e81a4ab1449d77ff62399, type: 2}
+  - {fileID: 11400000, guid: dc9d870130c535247b825021e908d7a6, type: 2}

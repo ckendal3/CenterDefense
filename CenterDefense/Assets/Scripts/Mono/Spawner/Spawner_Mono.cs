@@ -1,39 +1,58 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
+using WDIB.Components;
 using WDIB.Parameters;
 
 public class Spawner_Mono : MonoBehaviour
 {
     private StageData stageData;
-    private int index = 0;
+    public int index = 0;
 
     private int spawnCount = 0;
-    private int maxSpawnCount = 0;
+    private int spawnLimit = 0;
 
     private float timeTillNextSpawn;
     private float timeBetweenSpawns;
 
     private bool spawnEnemies = true;
+    private bool isInitialized = false;
 
-    public BoxCollider[] colliders;
+    private BoxCollider[] colliders;
 
-    private void Awake()
+    public void Initialize(int stageIndex, BoxCollider[] bColliders)
     {
+        index = stageIndex;
+
         stageData = StageParameters.Instance.stageSet[index];
+        colliders = bColliders;
+
+        if (stageData == null)
+        {
+            stageData = StageParameters.Instance.stageSet[0];
+        }
+
         timeBetweenSpawns = stageData.enemySpawnData.enemySpawnRate;
 
-        maxSpawnCount = stageData.enemySpawnData.maxEnemySpawnCount;
-    }
+        spawnLimit = stageData.enemySpawnData.maxEnemySpawnCount;
 
-    private void Start()
-    {
         // initial spawn amount
         SpawnEnemies(stageData.enemySpawnData.initialEnemySpawnAmount, stageData.enemySpawnData);
+
+        isInitialized = true;
+
+        Debug.Log("Stage: " + index);
     }
 
     void Update()
     {
+        if(isInitialized == false)
+        {
+            return;
+        }
+
+
         timeTillNextSpawn -= Time.deltaTime;
 
         if(timeTillNextSpawn <= 0 && spawnEnemies == true)
@@ -42,11 +61,19 @@ public class Spawner_Mono : MonoBehaviour
 
             SpawnEnemies(stageData.enemySpawnData.enemiesPerASpawn, stageData.enemySpawnData);
         }
+
+        if(spawnCount >= spawnLimit)
+        {
+            Debug.Log("Destroying spawner");
+            Destroy(gameObject);
+        }
     }
 
 
     private void SpawnEnemies(int spawnAmount, EnemySpawnData data)
     {
+        Entity entity; 
+
         GameObject go;
         EnemyData eData;
         MoveRigidbody moveRB;
@@ -55,7 +82,7 @@ public class Spawner_Mono : MonoBehaviour
         for (int i = 0; i < spawnAmount; i++)
         {
             // don't spawn anymore enemies
-            if(spawnCount >= maxSpawnCount)
+            if(spawnCount >= spawnLimit)
             {
                 spawnEnemies = false;
                 return;
@@ -99,6 +126,9 @@ public class Spawner_Mono : MonoBehaviour
             moveRB.hitMask = 1 << 10; //LayerMask.NameToLayer("Damageable");
             moveRB.speed = eData.stats.speed * stageData.multiplierData.enemySpeedMultiplier;
             moveRB.hitDistance = 1.2f;
+
+            // entity
+            go.AddComponent<EntityComponent>().Initialize(new EnemyTag { });
         }
     }
 

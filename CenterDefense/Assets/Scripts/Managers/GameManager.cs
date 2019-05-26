@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    private int stageIndex = 1;
+
     [SerializeField]
     public GameObject TurretObject;
     public GameObject BarricadeObject;
@@ -24,21 +27,35 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        SpawnObject();
+        StartNewStage();
     }
 
     private void Update()
     {
-        if(BarricadeObject == null && TurretObject == null)
+        if (BarricadeObject == null && TurretObject == null)
         {
             Debug.Log("Game over");
 
-            if(menuDisplayed == false)
+            if (menuDisplayed == false)
             {
                 menuObject.SetActive(true);
                 menuDisplayed = true;
+
+//#if UNITY_EDITOR
+//                World.Active.EntityManager.DestroyEntity(World.Active.EntityManager.GetAllEntities());
+//#endif
             }
         }
+        else if (spawnerObject == null)
+        {
+            StartNewStage();
+        }
+    }
+
+    private void StartNewStage()
+    {
+        SpawnObject();
+        stageIndex += 1;
     }
 
     private void SpawnObject()
@@ -47,8 +64,10 @@ public class GameManager : MonoBehaviour
         {
             Destroy(spawnerObject);
         }
+        Spawner_Mono spawner;
+
 
         spawnerObject = new GameObject("Spawner");
-        spawnerObject.AddComponent<Spawner_Mono>().colliders = spawnVolumes;
+        spawnerObject.AddComponent<Spawner_Mono>().Initialize(stageIndex, spawnVolumes);
     }
 }

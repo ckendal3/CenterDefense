@@ -3,6 +3,8 @@ using Unity.Mathematics;
 
 namespace WDIB.Components
 {
+    public struct EnemyTag : IComponentData { }
+    public struct PlayerTag : IComponentData { }
 
     // Marks an entity as a physics entity
     public struct PhysicsEntityTag : ISharedComponentData { }

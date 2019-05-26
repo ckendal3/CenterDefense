@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Default Enemy
   stats:
-    damage: 10
+    damage: 5.8
     attackRate: 1
-    health: 100
+    health: 17
     speed: 2
   mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: aee18da263ea64147b696ae58d79677f, type: 2}
