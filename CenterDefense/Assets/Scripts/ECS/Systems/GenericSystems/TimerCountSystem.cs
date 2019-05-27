@@ -31,6 +31,18 @@ public class TimerCountSystem : JobComponentSystem
         }
     }
 
+    // This could be way more universal
+    [BurstCompile]
+    public struct TimeBetweenShotsReduceJob : IJobForEach<TimeBetweenShots>
+    {
+        [ReadOnly] public float deltaTime;
+
+        public void Execute([ReadOnly] ref TimeBetweenShots tBS)
+        {
+            tBS.timeLeft -= deltaTime;
+        }
+    }
+
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         float deltaT = Time.deltaTime;
@@ -45,7 +57,12 @@ public class TimerCountSystem : JobComponentSystem
             deltaTime = deltaT
         }.Schedule(this, inputDeps);
 
+        JobHandle tbShotsJob = new TimeBetweenShotsReduceJob
+        {
+            deltaTime = deltaT
+        }.Schedule(this, inputDeps);
 
-        return JobHandle.CombineDependencies(inputDeps, countDownJob, countUpJob);
+
+        return JobHandle.CombineDependencies(tbShotsJob, countDownJob, countUpJob);
     }
 }
