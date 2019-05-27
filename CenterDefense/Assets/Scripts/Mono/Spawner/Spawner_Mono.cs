@@ -58,12 +58,12 @@ public class Spawner_Mono : MonoBehaviour
             stageData = StageParameters.Instance.stageSet[0];
         }
 
-        timeBetweenSpawns = stageData.enemySpawnData.enemySpawnRate;
+        timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
         timeTillNextSpawn = timeBetweenSpawns;
-        spawnLimit = stageData.enemySpawnData.maxEnemySpawnCount;
+        spawnLimit = stageData.enemySpawnData.maxTotalCount;
 
         // initial spawn amount
-        SpawnEnemies(stageData.enemySpawnData.initialEnemySpawnAmount, stageData.enemySpawnData);
+        SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
 
         index += 1;
     }

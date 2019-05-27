@@ -27,11 +27,11 @@ namespace WDIB.Parameters
     {
         [Tooltip("The total amount of enemies that will be spawned in this stage.")]
         [Range(1, 300)]
-        public int maxEnemySpawnCount;
+        public int maxTotalCount;
 
         [Tooltip("The amount of time in between enemies spawning.")]
         [Range(.1f, 5)]
-        public float enemySpawnRate;
+        public float spawnRate;
 
         [Tooltip("The amount of enemies that will spawn at a single time per spawn rate.")]
         [Range(1, 40)]
@@ -39,7 +39,7 @@ namespace WDIB.Parameters
 
         [Tooltip("The amount of enemies to be spawned at the beginning of the round.")]
         [Range(1, 40)]
-        public int initialEnemySpawnAmount;
+        public int initialSpawnCount;
 
         [Tooltip("The chance of spawning a certain type of enemy.")]
         public EnemySpawnChance[] spawnChance;

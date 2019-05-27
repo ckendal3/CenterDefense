@@ -21,7 +21,7 @@ namespace WDIB.Components
         public float maxDuration; // the duration to stop at when counting up
     }
 
-    public struct enemyCount : IComponentData
+    public struct EnemyCount : IComponentData
     {
         public int Value; // current count of enemies in the game
         public int maxCount; // maximum enemies spawned for the round
