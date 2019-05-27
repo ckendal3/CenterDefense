@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using WDIB.Components;
 
 public class Test_GameTimers : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class Test_GameTimers : MonoBehaviour
         switch (countType)
         {
             case ECounterType.CountUp:
-                eManager.AddComponentData(newEnt, new CountUpTime { Value = 0 });
+                eManager.AddComponentData(newEnt, new CountUpTime { Value = 0, maxDuration = countDownTime });
                 break;
             case ECounterType.CountDown:
                 eManager.AddComponentData(newEnt, new CountDownTime { Value = countDownTime });

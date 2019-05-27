@@ -5,11 +5,10 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
+using WDIB.Components;
 
-public class GameTimeCountSystem : JobComponentSystem
+public class TimerCountSystem : JobComponentSystem
 {
-
-
     [BurstCompile]
     public struct CountDownJob : IJobForEach<CountDownTime>
     {

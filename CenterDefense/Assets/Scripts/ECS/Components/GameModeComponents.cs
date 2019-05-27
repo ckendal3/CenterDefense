@@ -10,12 +10,12 @@ namespace WDIB.Components
         public int Value; // the reference for the enemy spawn settings to use
     }
 
-    public struct CountTimeDown : IComponentData // count down from this value to zero
+    public struct CountDownTime : IComponentData // count down from this value to zero
     {
         public float Value; // time to countdown from -> goes to zero
     }
 
-    public struct CountTimeUp : IComponentData // count up to this time
+    public struct CountUpTime : IComponentData // count up to this time
     {
         public float Value; // current time
         public float maxDuration; // the duration to stop at when counting up
