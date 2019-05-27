@@ -64,7 +64,7 @@ public class ShootSystem : JobComponentSystem
             }
 
             // create projectile
-            ProjectileFactory.CreateProjectiles(projectileId, positions[i].Value, rotations[i].Value);
+            WDIB.Factory.ProjectileFactory.CreateProjectiles(projectileId, positions[i].Value, rotations[i].Value);
             // Reset time between shots on entity
             eManager.SetComponentData(entities[i], new TimeBetweenShots { resetValue = timeResetValue, timeLeft = timeResetValue });
         }
