@@ -1,54 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Entities;
-using Unity.Rendering;
-using Unity.Transforms;
-using UnityEngine;
-using WDIB.Components;
+﻿using UnityEngine;
 
 public class Test_Projectile : MonoBehaviour
 {
-    private EntityManager eManager;
-    private EntityArchetype testArch;
+    [SerializeField]
+    public float timeBetweenSpawns = 1f;
+    private float timeTillNextSpawn = 0;
 
     [SerializeField]
-    public float speed = 0;
+    public int projectileID = 0;
 
-    private void Awake()
+    // Start is called before the first frame update
+    void Start()
     {
-        eManager = World.Active.EntityManager;
-
-        testArch = eManager.CreateArchetype(
-                                            ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(),
-                                            ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<PreviousTranslation>(),
-                                            ComponentType.ReadWrite<RenderMesh>(), ComponentType.ReadOnly<LocalToWorld>() // Needs this (is the overall transform representation) but doesn't have to be "directly" wrote to or read from
-                                            );
+        timeTillNextSpawn = timeBetweenSpawns;
     }
 
-    private void Start()
+    // Update is called once per frame
+    void Update()
     {
-        CreateEntity();
-        DestroySelf();
-    }
+        timeTillNextSpawn -= Time.deltaTime;
 
-    public void CreateEntity()
-    {
-        GameObject go = gameObject;
-        Entity newEnt = eManager.CreateEntity(testArch);
-
-        eManager.SetComponentData(newEnt, new Translation { Value = go.transform.position });
-        eManager.SetComponentData(newEnt, new PreviousTranslation { Value = go.transform.position });
-        eManager.SetComponentData(newEnt, new Rotation { Value = go.transform.rotation });
-        eManager.SetComponentData(newEnt, new Speed { Value = speed });
-        eManager.SetSharedComponentData(newEnt, new RenderMesh
+        if (timeTillNextSpawn < 0)
         {
-            mesh = go.GetComponent<MeshFilter>().sharedMesh,
-            material = go.GetComponent<MeshRenderer>().sharedMaterial
-        });
-    }
+            timeTillNextSpawn = timeBetweenSpawns;
 
-    public void DestroySelf()
-    {
-        Destroy(gameObject);
+            ProjectileFactory.CreateProjectiles(projectileID, transform.position, transform.rotation, 0);
+        }
     }
 }

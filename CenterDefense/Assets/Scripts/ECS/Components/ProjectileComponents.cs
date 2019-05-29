@@ -11,7 +11,7 @@ namespace WDIB.Components
         public float3 direction; // the direction
     }
 
-    public struct ProjectileSpawnAmount : IComponentData
+    public struct ProjectileCount : IComponentData
     {
         public int Value;
     }
@@ -30,5 +30,9 @@ namespace WDIB.Components
         public float timeLeft; // this is the time before it can shoot again
     }
 
+    public struct ProjectileID : ISharedComponentData
+    {
+        public int ID;
+    }
 
 }
