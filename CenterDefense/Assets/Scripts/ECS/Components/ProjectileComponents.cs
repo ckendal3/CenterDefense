@@ -35,4 +35,10 @@ namespace WDIB.Components
         public int ID;
     }
 
+    public struct ExplosiveID : IComponentData
+    {
+        public int ID;
+    }
+
+
 }

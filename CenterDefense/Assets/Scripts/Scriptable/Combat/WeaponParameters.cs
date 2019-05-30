@@ -17,5 +17,8 @@ namespace WDIB.Parameters
 
         [Header("Projectiles")]
         public ProjectileData[] projectileSet;
+
+        [Header("Projectiles")]
+        public ExplosiveData[] explosiveSet;
     }
 }
