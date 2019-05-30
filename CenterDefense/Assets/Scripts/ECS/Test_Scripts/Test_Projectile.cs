@@ -7,7 +7,7 @@ public class Test_Projectile : MonoBehaviour
     private float timeTillNextSpawn = 0;
 
     [SerializeField]
-    public int projectileID = 0;
+    public ushort projectileID = 0;
 
     // Start is called before the first frame update
     void Start()

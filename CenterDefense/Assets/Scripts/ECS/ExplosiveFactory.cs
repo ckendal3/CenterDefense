@@ -12,26 +12,20 @@ public static class ExplosiveFactory
     static EntityArchetype explosiveArch;
     static WeaponParameters weaponParameters;
 
-    // use for debugging
-#if UNITY_EDITOR
-    static int projectileGroupID = 0;
-    static int currentProjectileID = 0;
-#endif 
-
     private static void Initialize()
     {
         eManager = World.Active.EntityManager;
 
         // create our archetype
         explosiveArch = eManager.CreateArchetype(
-                                    ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Explosive>(),
+                                    ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<ExplosiveID>(),
                                     ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<Owner>()
                                     );
 
         weaponParameters = WeaponParameters.Instance;
     }
 
-    public static void CreateExplosive(int explosiveID, float3 spawnPos, uint ownerID)
+    public static void CreateExplosive(ushort explosiveID, float3 spawnPos, ushort ownerID)
     {
         // -------------------
         // create visuals here
@@ -43,7 +37,7 @@ public static class ExplosiveFactory
         SetComponents(explosiveID, spawnPos, ownerID, weaponParameters.explosiveSet[explosiveID]);
     }
 
-    private static void SetComponents(int explosiveID, float3 spawnPos, int ownerID, ExplosiveData data)
+    private static void SetComponents(ushort explosiveID, float3 spawnPos, ushort ownerID, ExplosiveData data)
     {
         Entity templateEnt;
 
@@ -56,7 +50,7 @@ public static class ExplosiveFactory
 
         //Generic Components
         eManager.SetComponentData(templateEnt, new Translation { Value = spawnPos });
-        eManager.SetComponentData(templateEnt, new Owner { ID = (ushort)ownerID });
+        eManager.SetComponentData(templateEnt, new Owner { ID = ownerID });
         eManager.SetComponentData(templateEnt, new ExplosiveID { ID = explosiveID });
     }
 }

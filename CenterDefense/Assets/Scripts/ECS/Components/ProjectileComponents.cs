@@ -32,12 +32,12 @@ namespace WDIB.Components
 
     public struct ProjectileID : ISharedComponentData
     {
-        public int ID;
+        public ushort ID;
     }
 
     public struct ExplosiveID : IComponentData
     {
-        public int ID;
+        public ushort ID;
     }
 
 

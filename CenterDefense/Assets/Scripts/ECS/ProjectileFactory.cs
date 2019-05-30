@@ -41,7 +41,7 @@ public static class ProjectileFactory
     /// </summary>
     /// <param name="projectileID"></param>
     /// <param name="spawnAmount"></param>
-    public static void CreateProjectiles(int projectileID, float3 spawnPos, quaternion spawnRot, int ownerID)
+    public static void CreateProjectiles(ushort projectileID, float3 spawnPos, quaternion spawnRot, ushort ownerID)
     {
         #if UNITY_EDITOR
         if (projectileGroupID > 65000) // yes I know this isn't a ushort and a ushort max value is 65535
@@ -61,7 +61,7 @@ public static class ProjectileFactory
     /// </summary>
     /// <param name="spawnTransform"></param>
     /// <param name="data"></param>
-    private static void SetComponents(int projectileID, float3 spawnPos, quaternion spawnRot, ProjectileData data, int ownerID)
+    private static void SetComponents(ushort projectileID, float3 spawnPos, quaternion spawnRot, ProjectileData data, ushort ownerID)
     {
         int projectileCount = data.projectilesPerAShot;
 
