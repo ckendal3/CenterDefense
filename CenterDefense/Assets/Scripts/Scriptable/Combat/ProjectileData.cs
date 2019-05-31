@@ -14,14 +14,14 @@ namespace WDIB.Parameters
         public int projectilesPerAShot = 1;
 
         // How far before the projectile should destroy
-        [Range(0f, 1000f)]
+        [Range(1f, 1000f)]
         public float maxDistance = 1000f;
 
         [Range(0f, 500f)]
         public float damage = 10f;
 
         // how many units should the projectile move a second
-        [Range(0f, 1000f)]
+        [Range(1f, 1000f)]
         public float speed = 10f;
 
         public PelletSpread spread = default;
