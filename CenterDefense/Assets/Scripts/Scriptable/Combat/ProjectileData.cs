@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 namespace WDIB.Parameters
 {
@@ -23,6 +24,8 @@ namespace WDIB.Parameters
         [Range(0f, 1000f)]
         public float speed = 10f;
 
+        public PelletSpread spread = default;
+
         // Visual settings
         public Mesh mesh;
         public Material material;
@@ -31,9 +34,14 @@ namespace WDIB.Parameters
     }
 }
 
+[System.Serializable]
 public struct PelletSpread
 {
+    [Range(0, -.35f)]
     public float minimumSpread;
+
+    [Range(0, .35f)]
     public float maximumSpread;
 }
 
+//TODO: Write a property drawer for pelletspread

@@ -15,6 +15,8 @@ public static class ProjectileFactory
 
     static WeaponParameters wParameters;
 
+    private static Random random;
+
     // use for debugging
 #if UNITY_EDITOR
     static int debugGroupID = 0;
@@ -143,17 +145,15 @@ public static class ProjectileFactory
     {
         rSpreads = new NativeArray<quaternion>(count, Allocator.TempJob);
 
-        PelletSpread pelletSpread = new PelletSpread { minimumSpread = -.2f, maximumSpread = .2f };
-
-        Random r = new Random(21793 * (uint)System.Environment.TickCount);
+        random = new Random(21793 * (uint)System.Environment.TickCount);
 
         float3 deviation;
 
         for (int i = 0; i < count; i++)
         {
-            deviation = new float3(r.NextFloat(pelletSpread.minimumSpread, pelletSpread.maximumSpread),
-                           r.NextFloat(pelletSpread.minimumSpread, pelletSpread.maximumSpread),
-                           r.NextFloat(pelletSpread.minimumSpread, pelletSpread.maximumSpread));
+            deviation = new float3(random.NextFloat(data.spread.minimumSpread, data.spread.maximumSpread),
+                           random.NextFloat(data.spread.minimumSpread, data.spread.maximumSpread),
+                           random.NextFloat(data.spread.minimumSpread, data.spread.maximumSpread));
 
             rSpreads[i] = math.mul(rotation, quaternion.Euler(deviation));
         }

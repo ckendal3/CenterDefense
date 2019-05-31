@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: ShotgunProjectile
   m_EditorClassIdentifier: 
   projectileName: Shotgun
-  projectilesPerAShot: 10
-  maxDistance: 50
+  projectilesPerAShot: 25
+  maxDistance: 10
   damage: 10
-  speed: 10
+  speed: 50
+  spread:
+    minimumSpread: -0.131
+    maximumSpread: 0.135
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: 486c5c06d28c9994b83fa36b5e724ca1, type: 2}
