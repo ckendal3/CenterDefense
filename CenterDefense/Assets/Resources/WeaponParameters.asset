@@ -17,3 +17,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 81f665b3f5a0f73479280639fe428c13, type: 2}
   projectileSet:
   - {fileID: 11400000, guid: ff4355f4062fb624b9bb358751961469, type: 2}
+  - {fileID: 11400000, guid: d45ed49652ecdeb47880ed47eaf99b8d, type: 2}
+  explosiveSet: []

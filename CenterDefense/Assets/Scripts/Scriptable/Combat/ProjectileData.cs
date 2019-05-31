@@ -31,3 +31,9 @@ namespace WDIB.Parameters
     }
 }
 
+public struct PelletSpread
+{
+    public float minimumSpread;
+    public float maximumSpread;
+}
+

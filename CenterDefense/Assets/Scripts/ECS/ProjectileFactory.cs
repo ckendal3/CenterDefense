@@ -17,8 +17,8 @@ public static class ProjectileFactory
 
     // use for debugging
 #if UNITY_EDITOR
-    static int projectileGroupID = 0;
-    static int currentProjectileID = 0;
+    static int debugGroupID = 0;
+    static int debugIndividualID = 0;
 #endif 
 
     public static void Initialize()
@@ -44,11 +44,12 @@ public static class ProjectileFactory
     public static void CreateProjectiles(ushort projectileID, float3 spawnPos, quaternion spawnRot, ushort ownerID)
     {
         #if UNITY_EDITOR
-        if (projectileGroupID > 65000) // yes I know this isn't a ushort and a ushort max value is 65535
+        if (debugGroupID > 65000)
         {
-            projectileGroupID = 0;
+            debugGroupID = 0;
         }
-        projectileGroupID += 1;
+        debugGroupID += 1;
+        debugIndividualID = 0;
         #endif
         // need to do this just on construction
         Initialize();
@@ -71,9 +72,11 @@ public static class ProjectileFactory
         // create the entity to clone from
         templateEnt = eManager.CreateEntity(projectileArch);
 
+        eManager.AddComponentData(templateEnt, new Scale { Value = .1f});
+
         #if UNITY_EDITOR
-        currentProjectileID += 1;
-        eManager.SetName(templateEnt, data.projectileName + " Projectile " + currentProjectileID + " - Group " + projectileGroupID);
+        debugIndividualID += 1;
+        eManager.SetName(templateEnt, data.projectileName + " Projectile " + debugIndividualID + " - Group " + debugGroupID);
         #endif
 
         //Generic Components
@@ -83,7 +86,7 @@ public static class ProjectileFactory
 
         // specific components
         eManager.SetComponentData(templateEnt, new PreviousTranslation { Value = spawnPos });
-        eManager.SetComponentData(templateEnt, new Owner { ID = (ushort)ownerID });
+        eManager.SetComponentData(templateEnt, new Owner { ID = ownerID });
         eManager.SetComponentData(templateEnt, new Distance { distanceTravelled = 0, maxAllowedDistance = data.maxDistance });
         eManager.SetComponentData(templateEnt, new Damage { Value = data.damage});
         eManager.SetComponentData(templateEnt, new Speed { Value = data.speed });
@@ -104,26 +107,55 @@ public static class ProjectileFactory
         if (projectileCount > 1)
         {
             // taking into account the template entity - we subtract one
-            NativeArray<Entity> projectileEnts = new NativeArray<Entity>(projectileCount - 1, Allocator.TempJob);
+            NativeArray<Entity> cloneEnts = new NativeArray<Entity>(projectileCount - 1, Allocator.TempJob);
 
             // creating and destroying entities is batched
             // we are cloning the entity so all components have the same value
-            eManager.Instantiate(templateEnt, projectileEnts);
+            eManager.Instantiate(templateEnt, cloneEnts);
 
-            for (int i = 0; i < projectileEnts.Length; i++)
+            // get random spreads
+            GetConeOfFire(data, spawnRot, projectileCount, out NativeArray<quaternion> rSpreads);
+
+            // We need to add random spread to the first projectile
+            eManager.SetComponentData(templateEnt, new Rotation { Value = rSpreads[0] });
+
+            // we start at one because set our templateEnt to the first spread
+            for (int i = 1; i < projectileCount; i++)
             {
                 #region Entity Debugging
                 #if UNITY_EDITOR
-                currentProjectileID += 1;
-                eManager.SetName(projectileEnts[i], data.projectileName + " Projectile " + currentProjectileID + " - Group " + projectileGroupID);
+                debugIndividualID += 1;
+                eManager.SetName(cloneEnts[i -1], data.projectileName + " Projectile " + debugIndividualID + " - Group " + debugGroupID);
                 #endif
                 #endregion
-
-                eManager.SetComponentData(projectileEnts[i], new Rotation { Value = spawnRot });
+                
+                // we subtract one because our cloned projectiles need to iterate starting at zero
+                eManager.SetComponentData(cloneEnts[i - 1], new Rotation { Value = rSpreads[i] });
             }
 
             //we have set all our data, dispose our native container to avoid memory leak
-            projectileEnts.Dispose();
+            cloneEnts.Dispose();
+            rSpreads.Dispose();
+        }
+    }
+
+    private static void GetConeOfFire(ProjectileData data, quaternion rotation, int count, out NativeArray<quaternion> rSpreads)
+    {
+        rSpreads = new NativeArray<quaternion>(count, Allocator.TempJob);
+
+        PelletSpread pelletSpread = new PelletSpread { minimumSpread = -.2f, maximumSpread = .2f };
+
+        Random r = new Random(21793 * (uint)System.Environment.TickCount);
+
+        float3 deviation;
+
+        for (int i = 0; i < count; i++)
+        {
+            deviation = new float3(r.NextFloat(pelletSpread.minimumSpread, pelletSpread.maximumSpread),
+                           r.NextFloat(pelletSpread.minimumSpread, pelletSpread.maximumSpread),
+                           r.NextFloat(pelletSpread.minimumSpread, pelletSpread.maximumSpread));
+
+            rSpreads[i] = math.mul(rotation, quaternion.Euler(deviation));
         }
     }
 }

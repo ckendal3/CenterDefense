@@ -140,7 +140,7 @@ public class HitSystem : JobComponentSystem
         {
             ray = new UnityEngine.Ray(commands[i].from, commands[i].direction);
 
-            if (Physics.Raycast(ray, out hit, commands[i].distance, 1 << 9)) //1 << 9 LayerMask.NameToLayer("Enemy")
+            if (Physics.Raycast(ray, out hit, commands[i].distance)) //1 << 9 LayerMask.NameToLayer("Enemy")
             {
                 if (hit.collider)
                 {
