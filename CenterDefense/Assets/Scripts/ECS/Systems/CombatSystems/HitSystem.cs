@@ -134,14 +134,25 @@ public class HitSystem : JobComponentSystem
         #region Default Physics Raycasting
         // Try using batch raycasting
         Health monoHealth;
-        UnityEngine.RaycastHit hit;
         UnityEngine.Ray ray;
+        UnityEngine.RaycastHit hit;
+        uint attackerID;
         for (int i = 0; i < commands.Length; i++)
         {
             ray = new UnityEngine.Ray(commands[i].from, commands[i].direction);
 
             if (Physics.Raycast(ray, out hit, commands[i].distance)) //1 << 9 LayerMask.NameToLayer("Enemy")
             {
+                // check if its the right thing to do damage, spawn impact effects, etc
+
+                // get id and spawn explosion if we are supposed to
+                attackerID = eManager.GetComponentData<Owner>(entities[i]).ID;
+                if (eManager.HasComponent<Explosive>(entities[i]))
+                {
+                    Explosive explosive = eManager.GetComponentData<Explosive>(entities[i]);
+                    ExplosiveFactory.CreateExplosive(explosive.ID, hit.point, attackerID);
+                }
+
                 if (hit.collider)
                 {
                     monoHealth = hit.collider.GetComponent<Health>();
@@ -159,6 +170,7 @@ public class HitSystem : JobComponentSystem
         }
         #endregion
 
+        #region Commented Out New Physics
         //NativeArray<RaycastInput> raycastInputs = new NativeArray<RaycastInput>(commands.Length, Allocator.TempJob);
         //JobHandle raysInputJob = new CreateRayInputsJob
         //{
@@ -224,6 +236,7 @@ public class HitSystem : JobComponentSystem
         //#endregion
 
         //hitBools.Dispose();
+        #endregion
 
         entities.Dispose();
         commands.Dispose();
@@ -243,7 +256,12 @@ public class HitSystem : JobComponentSystem
         m_DetectHitGroup = GetEntityQuery(new EntityQueryDesc
         {
             All = new ComponentType[] { ComponentType.ReadOnly<PreviousTranslation>(), ComponentType.ReadOnly<Translation>(),
-                ComponentType.ReadOnly<Rotation>(),  ComponentType.ReadWrite<Damage>(), ComponentType.ReadWrite<Distance>()}
+                ComponentType.ReadOnly<Rotation>(),  ComponentType.ReadWrite<Damage>(), ComponentType.ReadWrite<Distance>()
+            },
+            None = new ComponentType[]
+            {
+                ComponentType.ReadOnly<MultiHit>()
+            }
         });
     }
 }

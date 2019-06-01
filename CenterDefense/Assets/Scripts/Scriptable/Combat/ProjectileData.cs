@@ -1,5 +1,7 @@
-﻿using UnityEditor;
+﻿using Unity.Entities;
+using UnityEditor;
 using UnityEngine;
+using WDIB.Components;
 
 namespace WDIB.Parameters
 {
@@ -30,7 +32,10 @@ namespace WDIB.Parameters
         public Mesh mesh;
         public Material material;
 
-        // Add ECS Component attaching?
+        [Header("Components")]
+
+        [NaughtyAttributes.ReorderableList]
+        public ComponentDataStruct[] componentData;
     }
 }
 
@@ -45,3 +50,59 @@ public struct PelletSpread
 }
 
 //TODO: Write a property drawer for pelletspread
+
+[System.Serializable]
+public struct ComponentDataStruct : IGetComponent
+{
+    public EComponentType componentType;
+
+    public float floatValue;
+    public int intValue;
+
+    public EComponentType GetComponentType()
+    {
+        return componentType;
+    }
+
+    public IComponentData GetComponentData()
+    {
+        switch (componentType)
+        {
+            case EComponentType.HeadShot:
+                return new HeadShotMultiplier { Value = floatValue };
+            case EComponentType.MultiHit:
+                return new MultiHit { hits = 0, maxHits = intValue };
+            case EComponentType.EMP:
+                Debug.LogWarning("EMP is not implemented.");
+                return null;
+            case EComponentType.SuperCombine:
+                return new SuperCombine { hits = 0, hitsToCombine = intValue };
+            case EComponentType.Tracking:
+                return new TrackPlayer { ID = (uint)intValue };
+            case EComponentType.Explosive:
+                return new Explosive { ID = (uint)intValue };
+            case EComponentType.NotImplemented:
+                return null;
+            default:
+                return null;
+        }
+    }
+}
+
+public interface IGetComponent
+{
+    EComponentType GetComponentType();
+
+    IComponentData GetComponentData();
+}
+
+public enum EComponentType
+{
+    HeadShot,
+    MultiHit,
+    EMP,
+    SuperCombine,
+    Tracking,
+    Explosive,
+    NotImplemented
+}

@@ -20,5 +20,6 @@ MonoBehaviour:
   spread:
     minimumSpread: 0
     maximumSpread: 0
-  mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  mesh: {fileID: 4013275331872712965, guid: f84ff08835fb7e1439eb674d12642da9, type: 3}
   material: {fileID: 2100000, guid: aee18da263ea64147b696ae58d79677f, type: 2}
+  componentData: []

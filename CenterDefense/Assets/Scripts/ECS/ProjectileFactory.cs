@@ -5,6 +5,8 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 using WDIB.Components;
+using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 // Should there be options to pass in the random seed cone or that should be done else where?
 //eManager.SetComponentData(tmp, new Translation { Value = positions[i].Value + (math.forward(rotations[i].Value) * math.distance(projSpawnPoints[i].Value, positions[i].Value)) }); //+ (projSpawnPoints[i].Value + math.forward(rotations[i].Value)) + ) 
@@ -30,9 +32,9 @@ public static class ProjectileFactory
         // create our archetype
         projectileArch = eManager.CreateArchetype(
                                     ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Rotation>(), ComponentType.ReadWrite<PreviousTranslation>(),
-                                    ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Damage>(), ComponentType.ReadWrite<Owner>(),
-                                    ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<RenderMesh>(),
-                                    ComponentType.ReadWrite<Distance>(), ComponentType.ReadOnly<ProjectileID>()
+                                    ComponentType.ReadWrite<Speed>(), ComponentType.ReadWrite<Damage>(), ComponentType.ReadWrite<ProjectileID>(),
+                                    ComponentType.ReadWrite<Owner>(), ComponentType.ReadWrite<Distance>(),
+                                    ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<RenderMesh>()
                                     );
 
         wParameters = WeaponParameters.Instance;
@@ -74,7 +76,6 @@ public static class ProjectileFactory
         // create the entity to clone from
         templateEnt = eManager.CreateEntity(projectileArch);
 
-        eManager.AddComponentData(templateEnt, new Scale { Value = .1f});
 
         #if UNITY_EDITOR
         debugIndividualID += 1;
@@ -95,14 +96,14 @@ public static class ProjectileFactory
         eManager.SetSharedComponentData(templateEnt, new ProjectileID { ID = projectileID });
 
         // Add extra components specified in the projectile data
-        //if (data.componentData.Length > 0)
-        //{
-        //    int componentCount = data.componentData.Length;
-        //    for (int i = 0; i < componentCount; i++)
-        //    {
-        //        AddExtraComponentData(ref templateEnt, data.componentData[i]);
-        //    }
-        //}
+        if (data.componentData != null || data.componentData.Length > 0)
+        {
+            int componentCount = data.componentData.Length;
+            for (int i = 0; i < componentCount; i++)
+            {
+                AddExtraComponentData(ref templateEnt, data.componentData[i]);
+            }
+        }
         #endregion
 
         // if we have more than one projectile
@@ -127,7 +128,7 @@ public static class ProjectileFactory
                 #region Entity Debugging
                 #if UNITY_EDITOR
                 debugIndividualID += 1;
-                eManager.SetName(cloneEnts[i -1], data.projectileName + " Projectile " + debugIndividualID + " - Group " + debugGroupID);
+                eManager.SetName(cloneEnts[i - 1], data.projectileName + " Projectile " + debugIndividualID + " - Group " + debugGroupID);
                 #endif
                 #endregion
                 
@@ -145,7 +146,7 @@ public static class ProjectileFactory
     {
         rSpreads = new NativeArray<quaternion>(count, Allocator.TempJob);
 
-        random = new Random(21793 * (uint)System.Environment.TickCount);
+        random = new Unity.Mathematics.Random(21793 * (uint)System.Environment.TickCount);
 
         float3 deviation;
 
@@ -156,6 +157,39 @@ public static class ProjectileFactory
                            random.NextFloat(data.spread.minimumSpread, data.spread.maximumSpread));
 
             rSpreads[i] = math.mul(rotation, quaternion.Euler(deviation));
+        }
+    }
+
+    /// <summary>
+    /// Retrieve the components specified in the data and add them to the projectiles
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="data"></param>
+    private static void AddExtraComponentData(ref Entity entity, ComponentDataStruct data)
+    {
+        switch (data.componentType)
+        {
+            case EComponentType.HeadShot:
+                eManager.AddComponentData(entity, (HeadShotMultiplier)data.GetComponentData());
+                return;
+            case EComponentType.MultiHit:
+                eManager.AddComponentData(entity, (MultiHit)data.GetComponentData());
+                return;
+            case EComponentType.EMP:
+                Debug.LogWarning("EMP is not yet implemented.");
+                return;
+            case EComponentType.SuperCombine:
+                eManager.AddComponentData(entity, (SuperCombine)data.GetComponentData());
+                return;
+            case EComponentType.Tracking:
+                eManager.AddComponentData(entity, (TrackPlayer)data.GetComponentData());
+                return;
+            case EComponentType.Explosive:
+                eManager.AddComponentData(entity, (Explosive)data.GetComponentData());
+                return;
+            case EComponentType.NotImplemented:
+                Debug.Log("Not yet immplemented/");
+                return;
         }
     }
 }

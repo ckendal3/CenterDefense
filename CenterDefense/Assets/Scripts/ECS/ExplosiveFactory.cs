@@ -12,45 +12,58 @@ public static class ExplosiveFactory
     static EntityArchetype explosiveArch;
     static WeaponParameters weaponParameters;
 
+    // use for debugging
+    #if UNITY_EDITOR
+    static int debugGroupID = 0;
+    #endif 
+
     private static void Initialize()
     {
         eManager = World.Active.EntityManager;
 
         // create our archetype
         explosiveArch = eManager.CreateArchetype(
-                                    ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<ExplosiveID>(),
+                                    ComponentType.ReadWrite<Translation>(), ComponentType.ReadWrite<Explosive>(),
                                     ComponentType.ReadOnly<LocalToWorld>(), ComponentType.ReadWrite<Owner>()
                                     );
 
         weaponParameters = WeaponParameters.Instance;
     }
 
-    public static void CreateExplosive(ushort explosiveID, float3 spawnPos, ushort ownerID)
+    public static void CreateExplosive(uint explosiveID, float3 spawnPos, uint ownerID)
     {
         // -------------------
         // create visuals here
         // Make new method ---
         // -------------------
 
+        #if UNITY_EDITOR
+        debugGroupID += 1;
+        #endif
+
         Initialize();
 
         SetComponents(explosiveID, spawnPos, ownerID, weaponParameters.explosiveSet[explosiveID]);
     }
 
-    private static void SetComponents(ushort explosiveID, float3 spawnPos, ushort ownerID, ExplosiveData data)
+    private static void SetComponents(uint explosiveID, float3 spawnPos, uint ownerID, ExplosiveData data)
     {
         Entity templateEnt;
 
         // create the entity to clone from
         templateEnt = eManager.CreateEntity(explosiveArch);
 
-#if UNITY_EDITOR
-        eManager.SetName(templateEnt, data.explosiveName + " Explosive ");
-#endif
+        #if UNITY_EDITOR
+        if (debugGroupID > 65000)
+        {
+            debugGroupID = 0;
+        }
+        eManager.SetName(templateEnt, data.explosiveName + " Explosive " + debugGroupID);
+        #endif
 
         //Generic Components
         eManager.SetComponentData(templateEnt, new Translation { Value = spawnPos });
         eManager.SetComponentData(templateEnt, new Owner { ID = ownerID });
-        eManager.SetComponentData(templateEnt, new ExplosiveID { ID = explosiveID });
+        eManager.SetComponentData(templateEnt, new Explosive { ID = explosiveID });
     }
 }

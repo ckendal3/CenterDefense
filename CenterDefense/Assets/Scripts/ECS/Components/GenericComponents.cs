@@ -22,7 +22,7 @@ namespace WDIB.Components
     // this is like player controller - like the owner
     public struct Owner : IComponentData
     {
-        public ushort ID;
+        public uint ID;
     }
 
     // Where the controlled object should be looking

@@ -18,4 +18,6 @@ MonoBehaviour:
   projectileSet:
   - {fileID: 11400000, guid: ff4355f4062fb624b9bb358751961469, type: 2}
   - {fileID: 11400000, guid: d45ed49652ecdeb47880ed47eaf99b8d, type: 2}
-  explosiveSet: []
+  - {fileID: 11400000, guid: 316f3aa2b6f5b8946b41e3541ac38ffc, type: 2}
+  explosiveSet:
+  - {fileID: 11400000, guid: fb0110bdb4475324dba9432f33724a20, type: 2}

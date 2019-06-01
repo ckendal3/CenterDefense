@@ -6,6 +6,7 @@ using UnityEngine;
 using WDIB.Components;
 using WDIB.Parameters;
 
+// TODO: Add damaging
 public class ExplosiveSystem : JobComponentSystem
 {
     private LayerMask hitLayer;
@@ -24,7 +25,7 @@ public class ExplosiveSystem : JobComponentSystem
         entHandle.Complete();
 
         // Get all our ECS components we will need - this are minified jobs
-        var explosives = m_explosiveGroup.ToComponentDataArray<ExplosiveID>(Allocator.TempJob, out JobHandle expHandle);
+        var explosives = m_explosiveGroup.ToComponentDataArray<Explosive>(Allocator.TempJob, out JobHandle expHandle);
         var positions = m_explosiveGroup.ToComponentDataArray<Translation>(Allocator.TempJob, out JobHandle posHandle);
         var owners = m_explosiveGroup.ToComponentDataArray<Owner>(Allocator.TempJob, out JobHandle ownerHandle);
 
@@ -33,23 +34,40 @@ public class ExplosiveSystem : JobComponentSystem
         posHandle.Complete();
         ownerHandle.Complete();
 
+
         int explosiveId;
         ExplosiveData data;
+
         for (int i = 0; i < count; i++)
         {
-            explosiveId = explosives[i].ID;
+            explosiveId = (int)explosives[i].ID;
             data = wParameters.explosiveSet[explosiveId];
 
             // get our hits and process
             int hitCount = Physics.OverlapSphereNonAlloc(positions[i].Value, data.radius, colliders);
             if (hitCount > 0)
             {
+
+                IPushable pushable;
                 //go through every hit and do damage
                 for (int j = 0; j < hitCount; j++)
                 {
                     if (colliders[j] != null)
                     {
-                        
+                        pushable = colliders[j].GetComponent<IPushable>();
+
+                        // Create helper variables
+                        var point = colliders[j].transform.position;
+                        var origin = positions[i].Value;
+
+                        var distance = Vector3.Distance(origin, point);
+                        var curveVal = data.damageCurve.Evaluate(distance / data.radius);
+
+                        if (pushable != null)
+                        {
+                            pushable.ApplyImpulseForce(curveVal * data.force, positions[i].Value, data.radius);
+                        }
+
                     }
                 }
             }
@@ -76,7 +94,7 @@ public class ExplosiveSystem : JobComponentSystem
 
         m_explosiveGroup = GetEntityQuery(new EntityQueryDesc
         {
-            All = new ComponentType[] { ComponentType.ReadOnly<ExplosiveID>(), ComponentType.ReadOnly<Translation>() },
+            All = new ComponentType[] { ComponentType.ReadOnly<Explosive>(), ComponentType.ReadOnly<Translation>() },
             None = new ComponentType[] { ComponentType.ReadOnly<ProjectileID>() }
         });
     }

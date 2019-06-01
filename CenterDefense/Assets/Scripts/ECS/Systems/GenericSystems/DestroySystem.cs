@@ -11,16 +11,18 @@ using WDIB.Components;
 [UpdateAfter(typeof(LifeTimeSystem))]
 public class DestroySystem : JobComponentSystem
 {
+    float globalMaxDistance;
+
     [BurstCompile]
-    public struct CollectExceededLifeTimeJob : IJobForEachWithEntity<LifeTime>
+    public struct CollectExceededLifetimeJob : IJobForEachWithEntity<LifeTime>
     {
-        [WriteOnly] public NativeQueue<Entity>.Concurrent entityQueue;
+        [WriteOnly] public NativeQueue<Entity>.Concurrent entQueue;
 
         public void Execute(Entity entity, int index, [ReadOnly] ref LifeTime life)
         {
             if (life.Value <= 0)
             {
-                entityQueue.Enqueue(entity);
+                entQueue.Enqueue(entity);
             }
         }
     }
@@ -28,27 +30,28 @@ public class DestroySystem : JobComponentSystem
     [BurstCompile]
     public struct CollectExceededDistanceJob : IJobForEachWithEntity<Distance>
     {
-        [WriteOnly] public NativeQueue<Entity>.Concurrent entityQueue;
+        [WriteOnly] public NativeQueue<Entity>.Concurrent entQueue;
+        public float jobMaxDistance;
 
         public void Execute(Entity entity, int index, [ReadOnly] ref Distance distance)
         {
-            if (distance.distanceTravelled >= distance.maxAllowedDistance)
+            if (distance.distanceTravelled >= distance.maxAllowedDistance || distance.distanceTravelled >= jobMaxDistance) // cache distance and compare squares
             {
-                entityQueue.Enqueue(entity);
+                entQueue.Enqueue(entity);
             }
         }
     }
 
     [BurstCompile]
-    public struct CollectDeadHealthJob : IJobForEachWithEntity<WDIB.Components.Health>
+    public struct CollectExceededHitJob : IJobForEachWithEntity<MultiHit>
     {
-        [WriteOnly] public NativeQueue<Entity>.Concurrent entityQueue;
+        [WriteOnly] public NativeQueue<Entity>.Concurrent entQueue;
 
-        public void Execute(Entity entity, int index, [ReadOnly] ref WDIB.Components.Health health)
+        public void Execute(Entity entity, int index, ref MultiHit hitComponent)
         {
-            if (health.Value <= 0)
+            if (hitComponent.hits >= hitComponent.maxHits)
             {
-                entityQueue.Enqueue(entity);
+                entQueue.Enqueue(entity);
             }
         }
     }
@@ -56,12 +59,12 @@ public class DestroySystem : JobComponentSystem
     [BurstCompile]
     public struct FillDestroyArrayJob : IJob
     {
-        public NativeArray<Entity> entities;
+        [WriteOnly] public NativeArray<Entity> entities;
         public NativeQueue<Entity> entityQueue;
 
         public void Execute()
         {
-            for(int i = 0; i < entities.Length; i++)
+            for (int i = 0; i < entities.Length; i++)
             {
                 entities[i] = entityQueue.Dequeue();
             }
@@ -72,70 +75,55 @@ public class DestroySystem : JobComponentSystem
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         // Get the things we need to destroy
-        NativeQueue<Entity> destroyQueue;
+        NativeQueue<Entity> destroyQueue = new NativeQueue<Entity>(Allocator.TempJob);
 
-        // ********************************************************
-        // Destroy Life entities
-        destroyQueue = new NativeQueue<Entity>(Allocator.TempJob);
-        JobHandle collectLifeJob = new CollectExceededLifeTimeJob
+        var collectLifeTimeJob = new CollectExceededLifetimeJob
         {
-            entityQueue = destroyQueue.ToConcurrent()
+            entQueue = destroyQueue.ToConcurrent()
         }.Schedule(this, inputDeps);
 
-        collectLifeJob.Complete();
-        DestroyCollectedEntities(ref destroyQueue, ref collectLifeJob);
+        collectLifeTimeJob.Complete();
 
-
-        // ********************************************************
-        // Destroy Distance entities
-        destroyQueue = new NativeQueue<Entity>(Allocator.TempJob);
-        JobHandle collectDistanceJob = new CollectExceededDistanceJob
+        var collectDistanceJob = new CollectExceededDistanceJob
         {
-            entityQueue = destroyQueue.ToConcurrent()
+            entQueue = destroyQueue.ToConcurrent(),
+            jobMaxDistance = globalMaxDistance
         }.Schedule(this, inputDeps);
 
         collectDistanceJob.Complete();
-        DestroyCollectedEntities(ref destroyQueue, ref collectDistanceJob);
 
-
-        // ********************************************************
-        // Destroy Health entities
-        destroyQueue = new NativeQueue<Entity>(Allocator.TempJob);
-        JobHandle collectHealthJob = new CollectDeadHealthJob
+        var multiHitCheckJob = new CollectExceededHitJob
         {
-            entityQueue = destroyQueue.ToConcurrent()
+            entQueue = destroyQueue.ToConcurrent()
         }.Schedule(this, inputDeps);
 
-        collectHealthJob.Complete();
-        DestroyCollectedEntities(ref destroyQueue, ref collectHealthJob);
+        multiHitCheckJob.Complete();
 
-
-        return inputDeps;
-    }
-
-    public void DestroyCollectedEntities(ref NativeQueue<Entity> destroyQueue, ref JobHandle dependency)
-    {
-        // if there are entities to destroy
-        if(destroyQueue.Count > 0)
+        NativeArray<Entity> entitiesToDestroy = new NativeArray<Entity>(destroyQueue.Count, Allocator.TempJob);
+        var fillJob = new FillDestroyArrayJob
         {
-            // complete the previous job
-            // We get a litter of entities from a queue and write them a native array
-            NativeArray<Entity> entitiesToDestroy = new NativeArray<Entity>(destroyQueue.Count, Allocator.TempJob);
-            var fillJob = new FillDestroyArrayJob
-            {
-                entities = entitiesToDestroy,
-                entityQueue = destroyQueue
-            }.Schedule(dependency);
+            entities = entitiesToDestroy,
+            entityQueue = destroyQueue
+        }.Schedule(inputDeps);
 
-            // make sure we finish
-            fillJob.Complete();
+        // Make sure our array fill job is done
+        fillJob.Complete();
 
-            // Destroy all entities in the array
+        // Destroy all entities in the array
+        if (entitiesToDestroy.Length > 0)
+        {
             EntityManager.DestroyEntity(entitiesToDestroy);
-
-            entitiesToDestroy.Dispose();
         }
 
+        // Dispose of the NativeContainers
         destroyQueue.Dispose();
+        entitiesToDestroy.Dispose();
+
+        return JobHandle.CombineDependencies(fillJob, collectLifeTimeJob, collectDistanceJob);
+    }
+
+    protected override void OnCreate()
+    {
+        globalMaxDistance = 10000f;
     }
 }

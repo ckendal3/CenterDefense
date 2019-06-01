@@ -32,13 +32,39 @@ namespace WDIB.Components
 
     public struct ProjectileID : ISharedComponentData
     {
-        public ushort ID;
+        public uint ID;
     }
 
-    public struct ExplosiveID : IComponentData
+    public struct HeadShotMultiplier : IComponentData
     {
-        public ushort ID;
+        public float Value;
     }
 
+    public struct MultiHit : IComponentData
+    {
+        public int hits;
+        public int maxHits;
+    }
+
+    public struct EMP : IComponentData
+    {
+
+    }
+
+    public struct SuperCombine : IComponentData
+    {
+        public int hits;
+        public int hitsToCombine;
+    }
+
+    public struct TrackPlayer : IComponentData
+    {
+        public uint ID;
+    }
+
+    public struct Explosive : IComponentData
+    {
+        public uint ID;
+    }
 
 }

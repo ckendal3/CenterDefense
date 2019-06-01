@@ -20,5 +20,9 @@ MonoBehaviour:
   spread:
     minimumSpread: -0.12
     maximumSpread: 0.12
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  mesh: {fileID: 4013275331872712965, guid: f84ff08835fb7e1439eb674d12642da9, type: 3}
   material: {fileID: 2100000, guid: 486c5c06d28c9994b83fa36b5e724ca1, type: 2}
+  componentData:
+  - componentType: 1
+    floatValue: 1
+    intValue: 2
