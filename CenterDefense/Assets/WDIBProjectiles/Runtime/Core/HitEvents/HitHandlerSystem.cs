@@ -37,11 +37,9 @@ namespace WDIB.Utilities
             // Hit Logic Goes Here ----------------------------
             // ------------------------------------------------
 
-            //Debug.Log("HIT");
 
-            
-            TryToApplyDamage();
-            TryToApplyForce();
+            TryToApplyDamage(hit.collider, data.damage);
+            //TryToApplyForce();
             CreateHitVisual();
 
             DestroyEntity(ref handlerData.entity);
@@ -52,7 +50,7 @@ namespace WDIB.Utilities
         /// The delegate only returns hits with non-null colliders and deals with one projectile's sets of hits at a time.
         /// </summary>
         /// <param name="hitData"></param>
-        public static void OnMultiHitSystemEvent(HitHandlerData ecsData, NativeArray<RaycastHit> hitData)
+        public static void OnMultiHitSystemEvent(HitHandlerData ecsData, NativeArray<RaycastHit> hits)
         {
             RaycastHit hit;
             Entity entity = ecsData.entity;
@@ -60,10 +58,13 @@ namespace WDIB.Utilities
             MultiHit multiComponent = eManager.GetComponentData<MultiHit>(entity);
             uint attackerID = eManager.GetComponentData<Owner>(entity).ID;
 
+            ProjectileData pData;
+
             // for every hit
-            for (int i = 0; i < hitData.Length; i++)
+            for (int i = 0; i < hits.Length; i++)
             {
-                hit = hitData[i];
+                hit = hits[i];
+                pData = wParameters.GetProjectileDataByID((int)ecsData.projectileID);
 
                 //-------------------------------------------------
                 // Hit Logic Goes Here ----------------------------
@@ -81,8 +82,8 @@ namespace WDIB.Utilities
                 // aka Player hit it continues - but environmental hit it stops
 
                 
-                TryToApplyDamage();
-                TryToApplyForce();
+                TryToApplyDamage(hit.collider, pData.damage);
+                TryToApplyForce(hit.collider, hit.point, pData.damage);
                 CreateHitVisual();
             }
         }
@@ -90,11 +91,21 @@ namespace WDIB.Utilities
         public static void OnExplosiveSystemEvent(ECSExplosiveData[] hitData)
         {
             ECSExplosiveData data;
+            ExplosiveData explosiveStats;
+
+            #region Variable Caching
+            Collider collider;
+            Vector3 point;
+            Vector3 origin;
+            float distance;
+            float curveVal;
+            #endregion
+
             // for every explosion
             for (int i = 0; i < hitData.Length; i++)
             {
                 data = hitData[i];
-                Collider collider;
+                explosiveStats = wParameters.GetExplosiveDataByID(data.explosiveID);
 
                 // for every hit from the explosion
                 for (int j = 0; j < data.colliders.Length; j++)
@@ -105,27 +116,49 @@ namespace WDIB.Utilities
                     // Hit Logic Goes Here ----------------------------
                     // ------------------------------------------------
 
-                    //Debug.Log("EXPLOSION-HIT");
+                    point = collider.transform.position;
+                    origin = data.position;
 
-                    
-                    TryToApplyDamage();
-                    TryToApplyForce();
+                    distance = Vector3.Distance(origin, point);
+                    curveVal = explosiveStats.damageCurve.Evaluate(distance / explosiveStats.radius);
+
+
+                    TryToApplyDamage(collider, curveVal * explosiveStats.damage);
+                    TryToApplyForce(collider, data.position, curveVal * explosiveStats.force, explosiveStats.radius);
                     CreateHitVisual();
                 }
 
             }
         }
 
-        private static void TryToApplyDamage() //ref Entity entity, Collider collider
+        private static void TryToApplyDamage(Collider collider, float damage) //ref Entity entity, Collider collider
         {
-            //float damage = eManager.GetComponentData<Damage>(entity).Value;
+            IDamageable damageable = collider.GetComponent<IDamageable>();
 
-            //Debug.LogWarning("Applying damage is not implemented yet.");
+            if(damageable != null)
+            {
+                damageable.ApplyDamage(damage);
+            }
         }
 
-        private static void TryToApplyForce() //ref Entity entity, Collider collider
+        private static void TryToApplyForce(Collider collider, Vector3 position, float force)
         {
-            //Debug.LogWarning("Applying force is not implemented yet.");
+            IPushable pushable = collider.GetComponent<IPushable>();
+
+            if (pushable != null)
+            {
+                pushable.ApplyImpulseForce(force, position, .1f);
+            }
+        }
+
+        private static void TryToApplyForce(Collider collider, Vector3 position, float force, float radius)
+        {
+            IPushable pushable = collider.GetComponent<IPushable>();
+
+            if (pushable != null)
+            {
+                pushable.ApplyImpulseForce(force, position, radius);
+            }
         }
 
         private static void CreateHitVisual()
@@ -162,6 +195,8 @@ namespace WDIB.Utilities
     public struct ECSExplosiveData
     {
         public int explosiveID; // the explosion data
+        public Vector3 position;
+
         public Collider[] colliders; // all the things this explosion hit
     }
 }

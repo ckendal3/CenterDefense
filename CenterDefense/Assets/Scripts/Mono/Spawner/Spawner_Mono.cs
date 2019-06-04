@@ -83,9 +83,10 @@ public class Spawner_Mono : MonoBehaviour
 
             // add health
             go.AddComponent<Health>().MaxHealth = eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier;
-
+            
             // Freeze rigidbody
             go.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
+            go.AddComponent<Pushable>();
 
             // create damageable object
             dmObject = go.AddComponent<DamageObject>();
