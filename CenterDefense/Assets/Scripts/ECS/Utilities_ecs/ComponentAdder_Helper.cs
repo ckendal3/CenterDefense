@@ -87,7 +87,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     /// <summary>
     /// Tag the entity with a PhysicsEntity shared component
     /// </summary>
-    public void PhysicsEntityTag() => eManager.AddSharedComponentData(newEntity, new WDIB.Components.PhysicsEntityTag { });
+    public void PhysicsEntityTag() => eManager.AddComponentData(newEntity, new PhysicsEntityTag { });
 
     public void PlayerControlled(int playerID)
     {
@@ -103,7 +103,7 @@ public class ComponentAdder_Helper : MonoBehaviour, IConvertGameObjectToEntity
     #region Combat
     public void WeaponComponent(int weaponId) // maybe use an enum?
     {
-        WeaponData data = WeaponParameters.Instance.weaponSet[weaponId];
+        WeaponData data = WeaponParameters.Instance.GetWeaponDataByID(weaponId);
 
         eManager.AddComponentData(newEntity, new WeaponComponent {
                                                                     weaponID = weaponId, timeSinceLastBurstRound = data.timeBetweenBurstRounds, timeSinceLastShot = 0,

@@ -976,11 +976,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 291975358}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9470cddf759531a4aa4d15a6e7ea0124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de83c910fb60d24e897aff2b91d9a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenSpawns: 1
-  projectileID: 0
+  ProjectileID: 0
 --- !u!135 &291975360
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2145,11 +2145,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 586099771}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9470cddf759531a4aa4d15a6e7ea0124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de83c910fb60d24e897aff2b91d9a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenSpawns: 1
-  projectileID: 0
+  ProjectileID: 0
 --- !u!135 &586099773
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2343,11 +2343,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 650202876}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9470cddf759531a4aa4d15a6e7ea0124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de83c910fb60d24e897aff2b91d9a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenSpawns: 1
-  projectileID: 1
+  ProjectileID: 0
 --- !u!135 &650202878
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -2845,11 +2845,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 916806515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9470cddf759531a4aa4d15a6e7ea0124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de83c910fb60d24e897aff2b91d9a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenSpawns: 1
-  projectileID: 2
+  ProjectileID: 3
 --- !u!135 &916806517
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -4725,11 +4725,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1847009271}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9470cddf759531a4aa4d15a6e7ea0124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de83c910fb60d24e897aff2b91d9a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenSpawns: 1
-  projectileID: 2
+  ProjectileID: 3
 --- !u!135 &1847009273
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -5171,11 +5171,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1971165483}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9470cddf759531a4aa4d15a6e7ea0124, type: 3}
+  m_Script: {fileID: 11500000, guid: 7de83c910fb60d24e897aff2b91d9a44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenSpawns: 1
-  projectileID: 1
+  ProjectileID: 0
 --- !u!135 &1971165485
 SphereCollider:
   m_ObjectHideFlags: 0
