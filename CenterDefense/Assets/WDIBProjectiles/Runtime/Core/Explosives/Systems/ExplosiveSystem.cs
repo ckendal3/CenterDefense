@@ -64,7 +64,7 @@ public class ExplosiveSystem : JobComponentSystem
             if (hitCount > 0)
             {
                 explosiveHits = new List<Collider>();
-                ecsData = new ECSExplosiveData { explosiveID = explosiveId };
+                ecsData = new ECSExplosiveData { explosiveID = explosiveId, position = positions[i].Value };
 
                 // Do a batch raycast to all hits and filter out all overlapping colliders that 
                 // aren't hit first - so raycast to an overlapped object and make sure there isn't

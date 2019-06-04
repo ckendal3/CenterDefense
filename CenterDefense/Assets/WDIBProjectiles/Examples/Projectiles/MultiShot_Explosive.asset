@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MultiShot_Explosive
   m_EditorClassIdentifier: 
   projectileName: Default
-  projectilesPerAShot: 25
+  projectilesPerAShot: 1
   maxDistance: 1000
   damage: 10
   speed: 10

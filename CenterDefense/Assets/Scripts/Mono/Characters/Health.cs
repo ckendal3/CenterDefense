@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-public interface IHealth
+public interface IDamageable
 {
     bool isAlive { get; }
 
@@ -12,7 +12,7 @@ public interface IHealth
     void ApplyHealing(float healthRestore);
 }
 
-public class Health : MonoBehaviour, IHealth
+public class Health : MonoBehaviour, IDamageable
 {
     [SerializeField]
     public float MaximumHealth = 100;
