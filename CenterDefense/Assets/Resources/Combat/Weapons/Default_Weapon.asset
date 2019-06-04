@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Default_Weapon
   m_EditorClassIdentifier: 
   weaponName: Default
-  projectileId: 0
+  projectileId: 3
   firingType: 0
   timeBetweenShots: 0.29
   timeBetweenBurstRounds: 0.1

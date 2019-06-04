@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     private GameObject spawnerObject;
     [SerializeField]
-    private GameObject spawnVolumeObject;
+    private GameObject spawnVolumeObject = null;
     private BoxCollider[] spawnVolumes;
 
     private void Awake()

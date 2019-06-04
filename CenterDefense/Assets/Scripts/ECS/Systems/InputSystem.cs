@@ -40,7 +40,7 @@ public class InputSystem : JobComponentSystem
         public void Execute([ReadOnly] ref Owner owner, [WriteOnly] ref ControlledByPlayer controlled)
         {
             // Set a default value
-            controlled.lookPosition = lookAtPositions[owner.ID];
+            controlled.lookPosition = lookAtPositions[(int)owner.ID];
         }
     }
 
