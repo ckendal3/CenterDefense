@@ -61,25 +61,20 @@ public class DamageObject : MonoBehaviour
             origin = gameObject.transform.position
         };
 
-        Health health;
+        IDamageable damageable;
         if(Physics.Raycast(ray, out hit, damageDistance, hitMask)) // distance plus the size of our object
         {
-            health = hit.collider.gameObject.GetComponent<Health>();
+            damageable = hit.collider.gameObject.GetComponent<IDamageable>();
 
-            if (health != null)
+            if (damageable != null)
             {
                 moveRB.moveTowards = false;
-                DamageHealthObject(health);
+                damageable.ApplyDamage(gameObject.transform.localScale.x * damageAmount);
             }
         }
         else
         {
             moveRB.moveTowards = true;
         }
-    }
-
-    private void DamageHealthObject(Health damageableHealth)
-    {
-        damageableHealth.ApplyDamage(gameObject.transform.localScale.x * damageAmount);
     }
 }
