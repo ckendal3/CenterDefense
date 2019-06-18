@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
 using WDIB.Components;
+using WDIB.Parameters;
 
 public class TimerCountSystem : JobComponentSystem
 {

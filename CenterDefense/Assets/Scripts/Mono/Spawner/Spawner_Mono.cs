@@ -87,7 +87,7 @@ public class Spawner_Mono : MonoBehaviour
 
     private void SpawnEnemies(int spawnAmount, EnemySpawnData data)
     {
-        Entity entity; 
+        Entity entity = Entity.Null; 
 
         GameObject go;
         EnemyData eData;

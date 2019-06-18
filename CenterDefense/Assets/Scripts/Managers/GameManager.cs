@@ -81,8 +81,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Spawner_Mono spawner;
-
         spawnerObject = new GameObject("Spawner");
         spawnerObject.AddComponent<Spawner_Mono>().Initialize(stageIndex, spawnVolumes);
     }
