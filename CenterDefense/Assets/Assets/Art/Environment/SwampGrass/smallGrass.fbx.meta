@@ -1,14 +1,9 @@
 fileFormatVersion: 2
 guid: 04fb0a68f26746d4093fffbd44a1c0a4
 ModelImporter:
-  serializedVersion: 26
+  serializedVersion: 25
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: No Name
-    second: {fileID: 2100000, guid: 67603e7e1a0118949b0aa1b2627e0491, type: 2}
+  externalObjects: {}
   materials:
     importMaterials: 1
     materialName: 0
@@ -43,7 +38,6 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
-    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
