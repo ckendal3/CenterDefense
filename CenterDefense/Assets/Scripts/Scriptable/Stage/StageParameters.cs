@@ -14,5 +14,8 @@ namespace WDIB.Parameters
 
         [Header("Stage Data")]
         public StageData[] stageSet;
+
+        [Header("Overarching Difficulty Curve")]
+        public AnimationCurve difficultyCurve;
     }
 }

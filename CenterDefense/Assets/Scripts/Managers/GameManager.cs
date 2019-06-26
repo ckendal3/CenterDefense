@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using WDIB.Core.GameModes;
+using WDIB.Core.States;
+using WDIB.Parameters;
 
 public class GameManager : MonoBehaviour
 {
-    private int stageIndex = 1;
+    private bool startStage = true;
 
     [SerializeField]
     public float delayBetweenStages = 1f;
     private float timeTillNextRound = 5f;
-
-    public delegate void StageOver(EStageStatus status);
-    public static StageOver stageOverEvent;
-
-    private bool startStage = true;
 
     [SerializeField]
     public GameObject TurretObject;
@@ -24,10 +22,13 @@ public class GameManager : MonoBehaviour
     public GameObject menuObject;
     private bool menuDisplayed = false;
 
-    private GameObject spawnerObject;
     [SerializeField]
-    private GameObject spawnVolumeObject;
+    private GameObject spawnVolumeObject = null;
     private BoxCollider[] spawnVolumes;
+    private GameObject spawnerObject;
+
+    public GameStateBase gameState;
+    public StageGameMode gameMode;
 
     private void Awake()
     {
@@ -36,13 +37,16 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        stageOverEvent += StageStatusChange;
+        gameMode = new StageGameMode("StageMode", StageParameters.Instance.stageSet, StageParameters.Instance.difficultyCurve);
+        gameState = new GameStateBase();
 
         StartNewStage();
     }
 
     private void Update()
     {
+        timeTillNextRound -= Time.deltaTime;
+
         if (BarricadeObject == null && TurretObject == null)
         {
             Debug.Log("Game over");
@@ -51,10 +55,6 @@ public class GameManager : MonoBehaviour
             {
                 menuObject.SetActive(true);
                 menuDisplayed = true;
-
-//#if UNITY_EDITOR
-//                World.Active.EntityManager.DestroyEntity(World.Active.EntityManager.GetAllEntities());
-//#endif
             }
         }
         else if (timeTillNextRound <= 0 && startStage == true)
@@ -62,16 +62,19 @@ public class GameManager : MonoBehaviour
             StartNewStage();
             startStage = false;
         }
+        else if(spawnerObject == null)
+        {
+            startStage = true;
+        }
     }
 
     private void StartNewStage()
     {
-        SpawnObject();
-        stageIndex += 1;
-
-        timeTillNextRound = delayBetweenStages;
-
-        stageOverEvent?.Invoke(EStageStatus.start);
+        if(gameMode.GoToNextStage())
+        {
+            SpawnObject();
+            startStage = false;
+        }
     }
 
     private void SpawnObject()
@@ -82,29 +85,6 @@ public class GameManager : MonoBehaviour
         }
 
         spawnerObject = new GameObject("Spawner");
-        spawnerObject.AddComponent<Spawner_Mono>().Initialize(stageIndex, spawnVolumes);
+        spawnerObject.AddComponent<Spawner_Mono>().Initialize(gameMode.GetDifficultyAdjustedStage(), spawnVolumes);
     }
-
-    private void StageStatusChange(EStageStatus status)
-    {
-        switch (status)
-        {
-            case EStageStatus.start:
-                StartNewStage();
-                startStage = true;
-                break;
-            case EStageStatus.inprogress:
-                break;
-            case EStageStatus.over:
-                break;
-        }
-    }
-
-}
-
-public enum EStageStatus
-{
-    start,
-    inprogress,
-    over
 }

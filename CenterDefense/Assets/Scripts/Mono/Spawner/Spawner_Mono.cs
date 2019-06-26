@@ -8,7 +8,6 @@ using WDIB.Parameters;
 public class Spawner_Mono : MonoBehaviour
 {
     private StageData stageData;
-    public int index = 0;
 
     private int spawnCount = 0;
     private int spawnLimit = 0;
@@ -21,51 +20,21 @@ public class Spawner_Mono : MonoBehaviour
 
     private BoxCollider[] colliders;
 
-    private void Awake()
+    public void Initialize(StageData data, BoxCollider[] bColliders)
     {
-        GameManager.stageOverEvent += StageStatusChange;
-    }
-
-    public void Initialize(int stageIndex, BoxCollider[] bColliders)
-    {
-        index = stageIndex;
-
+        stageData = data;
         colliders = bColliders;
-
         isInitialized = true;
-    }
-
-    public void StageStatusChange(EStageStatus status)
-    {
-        switch (status)
-        {
-            case EStageStatus.start:
-                StartNewStage();
-                break;
-            case EStageStatus.inprogress:
-                break;
-            case EStageStatus.over:
-                break;
-        }
     }
 
     public void StartNewStage()
     {
-        stageData = StageParameters.Instance.stageSet[index];
-
-        if (stageData == null)
-        {
-            stageData = StageParameters.Instance.stageSet[0];
-        }
-
         timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
         timeTillNextSpawn = timeBetweenSpawns;
         spawnLimit = stageData.enemySpawnData.maxTotalCount;
 
         // initial spawn amount
         SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
-
-        index += 1;
     }
 
     void Update()
@@ -87,6 +56,8 @@ public class Spawner_Mono : MonoBehaviour
 
     private void SpawnEnemies(int spawnAmount, EnemySpawnData data)
     {
+        Debug.Log("Spawn enmies");
+
         Entity entity = Entity.Null; 
 
         GameObject go;
@@ -99,6 +70,7 @@ public class Spawner_Mono : MonoBehaviour
             // don't spawn anymore enemies
             if(spawnCount >= spawnLimit)
             {
+                Debug.Log($"Reached spawn limit {spawnLimit}");
                 spawnEnemies = false;
                 return;
             }
