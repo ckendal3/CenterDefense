@@ -109,12 +109,17 @@ namespace WDIB.Core.States
     {
         public static KeyValuePair<uint, PlayerState> player;
 
+        private static int KillCount = 0; // how many enemies kills
+        private static int MaxEnemies = 0;
+
         public GameStateV2()
         {
+            GameEvents.onGameStatusChange += OnGameStatusChange;
+
             player = new KeyValuePair<uint, PlayerState>(0, new PlayerState (0, 0));
         }
 
-        private void OnGameStateChange(GameStateStatusV2 gameState)
+        private void OnGameStatusChange(GameStateStatusV2 gameState)
         {
 
         }
