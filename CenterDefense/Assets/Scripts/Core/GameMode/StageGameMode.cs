@@ -6,10 +6,10 @@ namespace WDIB.Core.GameModes
     public class StageGameMode : GameModeBase
     {
 
-        public StageGameMode(string name, StageData[] data, AnimationCurve curve)
+        public StageGameMode(string name, StageObject[] dataObjects, AnimationCurve curve)
         {
             SetGameModeName(name);
-            stagesData = data;
+            stagesData = dataObjects;
             difficultyCurve = curve;
         }
 
@@ -18,7 +18,7 @@ namespace WDIB.Core.GameModes
 
         public AnimationCurve difficultyCurve;
 
-        public StageData[] stagesData;
+        public StageObject[] stagesData;
 
         public bool GoToNextStage()
         {
@@ -39,7 +39,7 @@ namespace WDIB.Core.GameModes
             // get the current difficulty on the curve
             float multiplier = difficultyCurve.Evaluate(index / stagesData.Length);
 
-            StageData tempData = stagesData[index];
+            StageData tempData = stagesData[index].data;
 
             AdjustStage(tempData);
 
@@ -88,7 +88,7 @@ public class StageModeV2
             index += 1;
             return true;
         }
-        else
+        else // start over
         {
             index = 0;
             return false;
@@ -98,10 +98,10 @@ public class StageModeV2
     // Get the multiplier data adjusted based on curve
     public StageMultiplierData GetDifficultyAdjustedStage()
     {
-        uint remainder = index % count;
+        uint additional = count % (count - index);
 
         // get the current difficulty on the curve
-        float multiplier = difficultyCurve.Evaluate(index / stagesData.Length) + remainder;
+        float multiplier = difficultyCurve.Evaluate(index / stagesData.Length) + additional;
 
         StageData tempData = stagesData[index];
 

@@ -47,20 +47,24 @@ namespace WDIB.Factory
         /// <param name="data"></param>
         private static void SetComponents(int stageID)
         {
-            StageData data = sParameters.stageSet[stageID];
+            StageData data;
 
-            if(data == null)
+            if (sParameters.stageSet[stageID] == null)
             {
-                data = sParameters.defaultStage;
+                data = sParameters.defaultStage.data;
                 Debug.LogWarning("Stage was out of index - applying default stage");
             }
-
+            else
+            {
+                data = sParameters.stageSet[stageID].data;
+            }
+             
             Entity entity = eManager.CreateEntity(stageArch);
 
 #if UNITY_EDITOR
             //This is just for debugging
             stageCount += 1;
-            eManager.SetName(entity, data.name + " " + stageCount);
+            eManager.SetName(entity, "Stage count: " + stageCount);
 #endif
 
             //Generic Components

@@ -10,10 +10,10 @@ namespace WDIB.Parameters
     {
         [Header("Default Stage")]
         [Tooltip("This is the default stage to start the game on.")]
-        public StageData defaultStage;
+        public StageObject defaultStage;
 
         [Header("Stage Data")]
-        public StageData[] stageSet;
+        public StageObject[] stageSet;
 
         [Header("Overarching Difficulty Curve")]
         public AnimationCurve difficultyCurve;

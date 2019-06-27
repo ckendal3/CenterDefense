@@ -12,7 +12,7 @@ namespace WDIB.Factory
     public static class EnemyFactory
     {
         static StageParameters sParameters;
-        static BoxCollider[] colliders;
+        static BoxCollider[] colliders = null;
 
         public static void Initialize()
         {
@@ -31,7 +31,7 @@ namespace WDIB.Factory
             // need to do this just on construction
             Initialize();
 
-            SetComponents(stageID, spawnPos, spawnRot, sParameters.stageSet[stageID], spawnCount);
+            SetComponents(stageID, spawnPos, spawnRot, sParameters.stageSet[stageID].data, spawnCount);
         }
 
         /// <summary>

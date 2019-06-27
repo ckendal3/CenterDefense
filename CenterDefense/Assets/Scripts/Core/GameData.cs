@@ -26,13 +26,13 @@ public class GameData : MonoBehaviour
     public void ApplyDefaultStage()
     {
         stageIndex += 1;
-        stageData = StageParameters.Instance.defaultStage;
+        stageData = StageParameters.Instance.defaultStage.data;
     }
 #endif
 
     public void ApplyNewStageData(int index)
     {
         stageIndex += 1;
-        stageData = StageParameters.Instance.stageSet[index];
+        stageData = StageParameters.Instance.stageSet[index].data;
     }
 }
