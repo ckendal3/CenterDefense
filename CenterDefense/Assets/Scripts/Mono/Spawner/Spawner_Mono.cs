@@ -94,7 +94,6 @@ public class Spawner_Mono : MonoBehaviour
             cCollider.radius = .6f;
             cCollider.height = 2.3f;
 
-
             // add health
             go.AddComponent<Health>().MaxHealth = eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier;
 

@@ -8,12 +8,6 @@ using WDIB.Parameters;
 
 public class GameManager : MonoBehaviour
 {
-    private bool startStage = true;
-
-    [SerializeField]
-    public float delayBetweenStages = 1f;
-    private float timeTillNextRound = 5f;
-
     [SerializeField]
     public GameObject TurretObject;
     public GameObject BarricadeObject;
@@ -53,52 +47,22 @@ public class GameManager : MonoBehaviour
         {
             case GameStateStatusV2.BetweenRounds:
                 EnableBuyMenu(true);
+                EnableMainMenu(false);
                 break;
             case GameStateStatusV2.StartRound:
                 EnableBuyMenu(false);
+                EnableMainMenu(false);
                 StartNewStage();
                 break;
             case GameStateStatusV2.InProgress:
+                EnableBuyMenu(false);
+                EnableMainMenu(false);
                 break;
             case GameStateStatusV2.GameOver:
-
+                EnableMainMenu(true);
                 break;
             default:
                 break;
-        }
-    }
-
-    private void Update()
-    {
-        timeTillNextRound -= Time.deltaTime;
-
-        if (BarricadeObject == null && TurretObject == null)
-        {
-            Debug.Log("Game over");
-
-            if (menuDisplayed == false)
-            {
-                menuObject.SetActive(true);
-                menuDisplayed = true;
-            }
-        }
-        else if (timeTillNextRound <= 0 && startStage == true)
-        {
-            StartNewStage();
-            startStage = false;
-        }
-        else if(spawnerObject == null)
-        {
-            startStage = true;
-        }
-    }
-
-    private void StartNewStage()
-    {
-        if(gameMode.GoToNextStage())
-        {
-            SpawnObject();
-            startStage = false;
         }
     }
 
@@ -108,10 +72,23 @@ public class GameManager : MonoBehaviour
         buyMenuDisplayed = value;
     }
 
+    private void EnableMainMenu(bool value)
+    {
+        menuObject.SetActive(value);
+        menuDisplayed = value;
+    }
+
+    private void StartNewStage()
+    {
+        gameMode.GoToNextStage();
+        SpawnObject();
+    }
+
     private void SpawnObject()
     {
         if(spawnerObject != null)
         {
+            spawnerObject.GetComponent<Spawner_Mono>().Initialize(gameMode.GetDifficultyAdjustedStage(), spawnVolumes);
             return;
         }
 
