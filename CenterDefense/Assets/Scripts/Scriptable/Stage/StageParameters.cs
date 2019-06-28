@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using WDIB.Utilities;
 
@@ -17,5 +18,17 @@ namespace WDIB.Parameters
 
         [Header("Overarching Difficulty Curve")]
         public AnimationCurve difficultyCurve;
+
+        public NativeArray<StageData> GetStagesDataArray()
+        {
+            NativeArray<StageData> data = new NativeArray<StageData>(stageSet.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+
+            for (int i = 0; i < stageSet.Length; i++)
+            {
+                data[i] = stageSet[i].data;
+            }
+
+            return data;
+        }
     }
 }

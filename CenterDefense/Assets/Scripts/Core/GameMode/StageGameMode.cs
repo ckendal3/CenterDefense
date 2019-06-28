@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Unity.Collections;
+using UnityEngine;
 using WDIB.Parameters;
 
 namespace WDIB.Core.GameModes
@@ -63,11 +64,13 @@ public class StageModeV2
 
     public StageMultiplierData multiplierData = default;
 
-    public StageModeV2(string name, StageData[] data, AnimationCurve curve)
+    public StageModeV2(string name, NativeArray<StageData> inData, AnimationCurve curve)
     {
         GameModeName = name;
-        stagesData = data;
+        stagesData = inData.ToArray();
         difficultyCurve = curve;
+
+        inData.Dispose();
     }
 
     // Have a set of stages and an overall stage difficulty curve
@@ -96,7 +99,7 @@ public class StageModeV2
     }
 
     // Get the multiplier data adjusted based on curve
-    public StageMultiplierData GetDifficultyAdjustedStage()
+    public StageData GetDifficultyAdjustedStage()
     {
         uint additional = count % (count - index);
 
@@ -107,7 +110,7 @@ public class StageModeV2
 
         AdjustStage(tempData);
 
-        return multiplierData;
+        return tempData;
 
         // in-line method
         void AdjustStage(StageData stage)

@@ -23,24 +23,49 @@ public class GameManager : MonoBehaviour
     private bool menuDisplayed = false;
 
     [SerializeField]
+    public GameObject buyMenu;
+    private bool buyMenuDisplayed = false;
+
+    [SerializeField]
     private GameObject spawnVolumeObject = null;
     private BoxCollider[] spawnVolumes;
     private GameObject spawnerObject;
 
     public GameStateBase gameState;
-    public StageGameMode gameMode;
+    public StageModeV2 gameMode;
 
     private void Awake()
     {
         spawnVolumes = spawnVolumeObject.GetComponentsInChildren<BoxCollider>();
+
+        GameEvents.onGameStatusChange += OnGameStatusChange;
     }
 
     private void Start()
     {
-        gameMode = new StageGameMode("StageMode", StageParameters.Instance.stageSet, StageParameters.Instance.difficultyCurve);
+        gameMode = new StageModeV2("StageMode", StageParameters.Instance.GetStagesDataArray(), StageParameters.Instance.difficultyCurve);
         gameState = new GameStateBase();
+    }
 
-        StartNewStage();
+    void OnGameStatusChange(GameStateStatusV2 status)
+    {
+        switch (status)
+        {
+            case GameStateStatusV2.BetweenRounds:
+                EnableBuyMenu(true);
+                break;
+            case GameStateStatusV2.StartRound:
+                EnableBuyMenu(false);
+                StartNewStage();
+                break;
+            case GameStateStatusV2.InProgress:
+                break;
+            case GameStateStatusV2.GameOver:
+
+                break;
+            default:
+                break;
+        }
     }
 
     private void Update()
@@ -75,6 +100,12 @@ public class GameManager : MonoBehaviour
             SpawnObject();
             startStage = false;
         }
+    }
+
+    private void EnableBuyMenu(bool value)
+    {
+        buyMenu.SetActive(value);
+        buyMenuDisplayed = value;
     }
 
     private void SpawnObject()
