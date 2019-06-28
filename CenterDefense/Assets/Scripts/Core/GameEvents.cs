@@ -12,6 +12,6 @@ public static class GameEvents
     public delegate void ScoreIncreaseHandler(int amount);
     public static ScoreIncreaseHandler onScoreIncrease;
 
-    public delegate void OnKillHandler(EnemyData data);
+    public delegate void OnKillHandler(); //EnemyData data
     public static OnKillHandler onKillEvent;
 }

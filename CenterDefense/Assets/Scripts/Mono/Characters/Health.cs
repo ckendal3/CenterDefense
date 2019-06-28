@@ -52,6 +52,7 @@ public class Health : MonoBehaviour, IHealth
         // if dead
         if (!isAlive)
         {
+            GameEvents.onKillEvent?.Invoke();
             Destroy(gameObject);
         }
     }

@@ -3,43 +3,91 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using WDIB.Components;
+using WDIB.Core.States;
 using WDIB.Parameters;
 
 public class Spawner_Mono : MonoBehaviour
 {
     private StageData stageData;
 
-    private int spawnCount = 0;
-    private int spawnLimit = 0;
+    private int spawnLimit;
+    private int spawnCount;
+
+    private int enemyKillCount = 0;
+    private int enemyLimit = 0;
 
     private float timeTillNextSpawn;
     private float timeBetweenSpawns;
 
     private bool spawnEnemies = true;
-    private bool isInitialized = false;
+    private bool inProgress = false;
 
     private BoxCollider[] colliders;
+
+    private void Awake()
+    {
+        GameEvents.onGameStatusChange += OnGameStatusChange;
+        GameEvents.onKillEvent += OnEnemyDeath;
+    }
 
     public void Initialize(StageData data, BoxCollider[] bColliders)
     {
         stageData = data;
         colliders = bColliders;
-        isInitialized = true;
     }
 
+    private void OnGameStatusChange(GameStateStatusV2 gameStatus)
+    {
+        switch (gameStatus)
+        {
+            case GameStateStatusV2.BetweenRounds:
+                inProgress = false;
+                break;
+            case GameStateStatusV2.StartRound:
+                inProgress = true;
+                StartNewStage();
+                break;
+            case GameStateStatusV2.InProgress:
+                inProgress = true;
+                break;
+            case GameStateStatusV2.GameOver:
+                inProgress = false;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// This gathers all the appropriate data and sets it
+    /// </summary>
     public void StartNewStage()
     {
         timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
         timeTillNextSpawn = timeBetweenSpawns;
+
+        enemyLimit = stageData.enemySpawnData.maxTotalCount;
         spawnLimit = stageData.enemySpawnData.maxTotalCount;
+
+        enemyKillCount = 0;
+        spawnCount = 0;
 
         // initial spawn amount
         SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
     }
 
+    private void OnEnemyDeath()
+    {
+        enemyKillCount += 1;
+
+        // if all enemies are dead
+        if(enemyKillCount >= enemyLimit)
+        {
+            GameEvents.onGameStatusChange?.Invoke(GameStateStatusV2.BetweenRounds);
+        }
+    }
+
     void Update()
     {
-        if(isInitialized == false)
+        if(inProgress == false)
         {
             return;
         }
@@ -144,5 +192,5 @@ public class Spawner_Mono : MonoBehaviour
             Random.Range(bounds.min.z, bounds.max.z)
         );
     }
-    
+
 }

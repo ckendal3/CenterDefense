@@ -10,22 +10,21 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField]
     public GameObject TurretObject;
+
     public GameObject BarricadeObject;
 
     [SerializeField]
     public GameObject menuObject;
-    private bool menuDisplayed = false;
 
     [SerializeField]
     public GameObject buyMenu;
-    private bool buyMenuDisplayed = false;
 
     [SerializeField]
     private GameObject spawnVolumeObject = null;
     private BoxCollider[] spawnVolumes;
     private GameObject spawnerObject;
 
-    public GameStateBase gameState;
+    public GameStateV2 gameState;
     public StageModeV2 gameMode;
 
     private void Awake()
@@ -38,7 +37,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         gameMode = new StageModeV2("StageMode", StageParameters.Instance.GetStagesDataArray(), StageParameters.Instance.difficultyCurve);
-        gameState = new GameStateBase();
+        gameState = new GameStateV2();
     }
 
     void OnGameStatusChange(GameStateStatusV2 status)
@@ -59,6 +58,7 @@ public class GameManager : MonoBehaviour
                 EnableMainMenu(false);
                 break;
             case GameStateStatusV2.GameOver:
+                EnableBuyMenu(false);
                 EnableMainMenu(true);
                 break;
             default:
@@ -69,22 +69,20 @@ public class GameManager : MonoBehaviour
     private void EnableBuyMenu(bool value)
     {
         buyMenu.SetActive(value);
-        buyMenuDisplayed = value;
     }
 
     private void EnableMainMenu(bool value)
     {
         menuObject.SetActive(value);
-        menuDisplayed = value;
     }
 
     private void StartNewStage()
     {
         gameMode.GoToNextStage();
-        SpawnObject();
+        CreateSpawnerObject();
     }
 
-    private void SpawnObject()
+    private void CreateSpawnerObject()
     {
         if(spawnerObject != null)
         {
