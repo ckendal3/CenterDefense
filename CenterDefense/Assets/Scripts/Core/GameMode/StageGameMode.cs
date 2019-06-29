@@ -64,13 +64,11 @@ public class StageModeV2
 
     public StageMultiplierData multiplierData = default;
 
-    public StageModeV2(string name, NativeArray<StageData> inData, AnimationCurve curve)
+    public StageModeV2(string name, StageData[] inData, AnimationCurve curve)
     {
         GameModeName = name;
-        stagesData = inData.ToArray();
+        stagesData = inData;
         difficultyCurve = curve;
-
-        inData.Dispose();
     }
 
     // Have a set of stages and an overall stage difficulty curve
@@ -86,7 +84,7 @@ public class StageModeV2
         count += 1;
 
         // if we still have stages left
-        if (index < stagesData.Length)
+        if (index < stagesData.Length - 1)
         {
             index += 1;
             return true;
@@ -101,19 +99,23 @@ public class StageModeV2
     // Get the multiplier data adjusted based on curve
     public StageData GetDifficultyAdjustedStage()
     {
-        uint additional = count % (count - index);
+        uint additional = 0;
+        if (count != 0 && index != 0)
+        {
+            additional = count % index;
+        }
 
         // get the current difficulty on the curve
         float multiplier = difficultyCurve.Evaluate(index / stagesData.Length) + additional;
 
         StageData tempData = stagesData[index];
 
-        AdjustStage(tempData);
+        AdjustStage(ref tempData);
 
         return tempData;
 
         // in-line method
-        void AdjustStage(StageData stage)
+        void AdjustStage(ref StageData stage)
         {
             // this is resetting the information on the scriptable object
             multiplierData.enemyDifficultyMultiplier = stage.multiplierData.enemyDifficultyMultiplier * multiplier;

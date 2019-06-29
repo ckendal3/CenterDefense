@@ -12,27 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0d7e26a3a3691b4f839798678ebde37, type: 3}
   m_Name: DefaultStage
   m_EditorClassIdentifier: 
-  playerSpawnData:
-    playerData:
-      weaponId: {fileID: 11400000, guid: 81f665b3f5a0f73479280639fe428c13, type: 2}
-      currency:
-        Value: 0
-  enemySpawnData:
-    maxEnemySpawnCount: 20
-    enemySpawnRate: 1.5
-    enemiesPerASpawn: 4
-    initialEnemySpawnAmount: 4
-    spawnChance:
-    - enemyType: 0
-      spawnChance: 0.1
-      enemyData: {fileID: 11400000, guid: 6ba5095068dfe1a458c0997fc0b94e17, type: 2}
-    - enemyType: 1
-      spawnChance: 0.65
-      enemyData: {fileID: 11400000, guid: f4dc01cc277c98d44b71f86a8df17fc2, type: 2}
-    - enemyType: 2
-      spawnChance: 0.25
-      enemyData: {fileID: 11400000, guid: 7b4772bb39db4b446a86777f8420aeba, type: 2}
-  multiplierData:
-    stageRewardMultiplier: 1
-    enemyDifficultyMultiplier: 1
-    enemySpeedMultiplier: 1
+  data:
+    playerSpawnData:
+      playerData:
+        weaponId: {fileID: 11400000, guid: 81f665b3f5a0f73479280639fe428c13, type: 2}
+        currency:
+          Value: 1
+    enemySpawnData:
+      maxTotalCount: 55
+      spawnRate: 1.05
+      enemiesPerASpawn: 8
+      initialSpawnCount: 6
+      spawnChance:
+      - enemyType: 1
+        spawnChance: 1
+        enemyData: {fileID: 11400000, guid: 20a4630947ca44c4ba98ff1d52f25c85, type: 2}
+    multiplierData:
+      stageRewardMultiplier: 1
+      enemyDifficultyMultiplier: 1
+      enemySpeedMultiplier: 1

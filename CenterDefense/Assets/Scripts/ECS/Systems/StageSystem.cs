@@ -6,6 +6,7 @@ using Unity.Jobs;
 using UnityEngine;
 using WDIB.Components;
 
+[DisableAutoCreation]
 public class StageSystem : JobComponentSystem
 {
     private EntityQuery m_EnemyGroup;

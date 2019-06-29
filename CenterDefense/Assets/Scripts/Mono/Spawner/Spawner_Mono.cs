@@ -8,7 +8,10 @@ using WDIB.Parameters;
 
 public class Spawner_Mono : MonoBehaviour
 {
+    private StageParameters sParameters;
     private StageData stageData;
+
+    private StageModeV2 mode;
 
     private int spawnLimit;
     private int spawnCount;
@@ -30,9 +33,9 @@ public class Spawner_Mono : MonoBehaviour
         GameEvents.onKillEvent += OnEnemyDeath;
     }
 
-    public void Initialize(StageData data, BoxCollider[] bColliders)
+    public void Initialize(StageModeV2 gameMode, BoxCollider[] bColliders)
     {
-        stageData = data;
+        mode = gameMode ;
         colliders = bColliders;
     }
 
@@ -44,11 +47,9 @@ public class Spawner_Mono : MonoBehaviour
                 inProgress = false;
                 break;
             case GameStateStatusV2.StartRound:
-                inProgress = true;
                 StartNewStage();
                 break;
             case GameStateStatusV2.InProgress:
-                inProgress = true;
                 break;
             case GameStateStatusV2.GameOver:
                 inProgress = false;
@@ -61,14 +62,16 @@ public class Spawner_Mono : MonoBehaviour
     /// </summary>
     public void StartNewStage()
     {
-        timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
-        timeTillNextSpawn = timeBetweenSpawns;
+        stageData = mode.GetDifficultyAdjustedStage();
 
-        enemyLimit = stageData.enemySpawnData.maxTotalCount;
-        spawnLimit = stageData.enemySpawnData.maxTotalCount;
+        timeTillNextSpawn = timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
 
-        enemyKillCount = 0;
-        spawnCount = 0;
+        spawnLimit = enemyLimit = stageData.enemySpawnData.maxTotalCount;
+
+        enemyKillCount = spawnCount = 0;
+
+        spawnEnemies = true;
+        inProgress = true;
 
         // initial spawn amount
         SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);

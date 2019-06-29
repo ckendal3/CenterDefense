@@ -28,6 +28,7 @@ public struct StageMultiplierData
     public float enemySpeedMultiplier;
 }
 
+[System.Serializable]
 public struct StageData
 {
     [Header("Player Spawn Settings")]

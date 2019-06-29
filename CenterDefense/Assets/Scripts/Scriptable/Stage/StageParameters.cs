@@ -19,9 +19,9 @@ namespace WDIB.Parameters
         [Header("Overarching Difficulty Curve")]
         public AnimationCurve difficultyCurve;
 
-        public NativeArray<StageData> GetStagesDataArray()
+        public StageData[] GetStagesDataArray()
         {
-            NativeArray<StageData> data = new NativeArray<StageData>(stageSet.Length, Allocator.TempJob, NativeArrayOptions.UninitializedMemory);
+            StageData[] data = new StageData[stageSet.Length];
 
             for (int i = 0; i < stageSet.Length; i++)
             {
@@ -29,6 +29,24 @@ namespace WDIB.Parameters
             }
 
             return data;
+        }
+
+        /// <summary>
+        /// Get the projectile data by the specified ID.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public StageData GetStageDataByID(int ID)
+        {
+#if UNITY_EDITOR
+            if (stageSet == null || stageSet.Length == 0 || ID >= stageSet.Length || stageSet[ID] == null) //projectileSet == null || 
+            {
+                Debug.LogWarning($"Stage ID {ID} does not exist. Returning default stage.");
+                return defaultStage.data;
+            }
+#endif
+
+            return stageSet[ID].data;
         }
     }
 }

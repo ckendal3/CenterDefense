@@ -17,6 +17,11 @@ namespace WDIB.Factory
         static StageParameters sParameters;
         static int stageCount = 0;
 
+        static StageFactory()
+        {
+            Initialize();
+        }
+
         private static void Initialize()
         {
             eManager = World.Active.EntityManager;
@@ -34,9 +39,6 @@ namespace WDIB.Factory
         /// <param name="stageID"></param>
         public static void CreateStage(int stageID)
         {
-            // need to do this just on construction
-            Initialize();
-
             SetComponents(stageID);
         }
 
@@ -47,29 +49,19 @@ namespace WDIB.Factory
         /// <param name="data"></param>
         private static void SetComponents(int stageID)
         {
-            StageData data;
-
-            if (sParameters.stageSet[stageID] == null)
-            {
-                data = sParameters.defaultStage.data;
-                Debug.LogWarning("Stage was out of index - applying default stage");
-            }
-            else
-            {
-                data = sParameters.stageSet[stageID].data;
-            }
+            StageData data = sParameters.GetStageDataByID(stageID);
              
-            Entity entity = eManager.CreateEntity(stageArch);
+            //Entity entity = eManager.CreateEntity(stageArch);
 
-#if UNITY_EDITOR
-            //This is just for debugging
-            stageCount += 1;
-            eManager.SetName(entity, "Stage count: " + stageCount);
-#endif
+//#if UNITY_EDITOR
+//            //This is just for debugging
+//            stageCount += 1;
+//            eManager.SetName(entity, "Stage count: " + stageCount);
+//#endif
 
-            //Generic Components
-            eManager.SetComponentData(entity, new EnemyCount { Value = 0, maxCount = data.enemySpawnData.maxTotalCount });
-            eManager.SetComponentData(entity, new EnemySpawnSettings { Value = stageID });
+//            //Generic Components
+//            eManager.SetComponentData(entity, new EnemyCount { Value = 0, maxCount = data.enemySpawnData.maxTotalCount });
+//            eManager.SetComponentData(entity, new EnemySpawnSettings { Value = stageID });
 
         }
     }

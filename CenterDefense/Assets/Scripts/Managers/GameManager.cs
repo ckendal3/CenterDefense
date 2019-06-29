@@ -38,9 +38,13 @@ public class GameManager : MonoBehaviour
     {
         gameMode = new StageModeV2("StageMode", StageParameters.Instance.GetStagesDataArray(), StageParameters.Instance.difficultyCurve);
         gameState = new GameStateV2();
+
+        CreateSpawnerObject();
+
+        BroadcastStartRoundStatus();
     }
 
-    void OnGameStatusChange(GameStateStatusV2 status)
+    private void OnGameStatusChange(GameStateStatusV2 status)
     {
         switch (status)
         {
@@ -68,29 +72,44 @@ public class GameManager : MonoBehaviour
 
     private void EnableBuyMenu(bool value)
     {
-        buyMenu.SetActive(value);
+        if(buyMenu != null)
+        {
+            buyMenu.SetActive(value);
+        }
+        else
+        {
+            Debug.LogWarning("Buy Menu is null");
+        }
     }
 
     private void EnableMainMenu(bool value)
     {
-        menuObject.SetActive(value);
+        if (menuObject != null)
+        {
+            menuObject.SetActive(value);
+        }
+        else
+        {
+            Debug.LogWarning("Menu Object is null");
+        }
     }
 
     private void StartNewStage()
     {
         gameMode.GoToNextStage();
-        CreateSpawnerObject();
     }
 
     private void CreateSpawnerObject()
     {
-        if(spawnerObject != null)
+        if(spawnerObject == null)
         {
-            spawnerObject.GetComponent<Spawner_Mono>().Initialize(gameMode.GetDifficultyAdjustedStage(), spawnVolumes);
-            return;
+            spawnerObject = new GameObject("Spawner");
+            spawnerObject.AddComponent<Spawner_Mono>().Initialize(gameMode, spawnVolumes);
         }
+    }
 
-        spawnerObject = new GameObject("Spawner");
-        spawnerObject.AddComponent<Spawner_Mono>().Initialize(gameMode.GetDifficultyAdjustedStage(), spawnVolumes);
+    public void BroadcastStartRoundStatus()
+    {
+        GameEvents.onGameStatusChange?.Invoke(GameStateStatusV2.StartRound);
     }
 }

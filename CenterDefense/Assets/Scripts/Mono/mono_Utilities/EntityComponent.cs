@@ -19,6 +19,11 @@ public class EntityComponent : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(entity == Entity.Null)
+        {
+            return;
+        }
+
         if (eManager.Exists(entity))
         {
             eManager.DestroyEntity(entity);
