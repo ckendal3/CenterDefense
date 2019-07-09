@@ -12,4 +12,10 @@ public class MenuBehaviours : MonoBehaviour
     {
         SceneManager.LoadScene(mapToLoad);
     }
+
+    public void ReloadMap()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
 }

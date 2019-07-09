@@ -47,12 +47,16 @@ public class Health : MonoBehaviour, IDamageable
 
     public void ApplyDamage(float damage)
     {
-        currentHealth -= damage;
-
-        // if dead
-        if (!isAlive)
+        if(isAlive == true)
         {
-            Destroy(gameObject);
+            currentHealth -= damage;
+
+            // if dead
+            if (isAlive == false)
+            {
+                GameEvents.onKillEvent?.Invoke();
+                Destroy(gameObject);
+            }
         }
     }
 

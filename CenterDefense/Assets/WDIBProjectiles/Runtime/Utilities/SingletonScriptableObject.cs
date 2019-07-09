@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Entities;
 using UnityEngine;
 
 namespace WDIB.Utilities
@@ -28,3 +29,33 @@ namespace WDIB.Utilities
         }
     }
 }
+
+//public class Test
+//{
+//    public static void GetComponent() 
+//    {
+
+//    }
+
+//    public static T GetComponentData<T>(ComponentDataWrapper dataWrapper) where T : struct, IComponentData
+//    {
+//        return (T)ConvertBasedOnEnum<T>();
+//    }
+
+//    public static T ConvertBasedOnEnum(IComponentData component, DataType type)
+//    {
+
+//    }
+//}
+
+//public enum DataType
+//{
+//    EMP,
+//    headshot
+//}
+
+//public struct ComponentDataWrapper
+//{
+//    public IComponentData component;
+//    public DataType type;
+//}

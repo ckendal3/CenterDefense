@@ -1,0 +1,68 @@
+﻿using WDIB.Parameters;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Rendering;
+using Unity.Transforms;
+using WDIB.Components;
+using UnityEngine;
+
+namespace WDIB.Factory
+{
+    public static class StageFactory
+    {
+        static EntityManager eManager;
+        static EntityArchetype stageArch;
+
+        static StageParameters sParameters;
+        static int stageCount = 0;
+
+        static StageFactory()
+        {
+            Initialize();
+        }
+
+        private static void Initialize()
+        {
+            eManager = World.Active.EntityManager;
+
+            // create our archetype
+            stageArch = eManager.CreateArchetype(
+                                        ComponentType.ReadWrite<EnemySpawnSettings>(), ComponentType.ReadWrite<EnemyCount>()
+                                        );
+            sParameters = StageParameters.Instance;
+        }
+
+        /// <summary>
+        /// Create a stage based on the supplied stage ID
+        /// </summary>
+        /// <param name="stageID"></param>
+        public static void CreateStage(int stageID)
+        {
+            SetComponents(stageID);
+        }
+
+        /// <summary>
+        /// Set the stage component data
+        /// </summary>
+        /// <param name="stageID"></param>
+        /// <param name="data"></param>
+        private static void SetComponents(int stageID)
+        {
+            StageData data = sParameters.GetStageDataByID(stageID);
+             
+            //Entity entity = eManager.CreateEntity(stageArch);
+
+//#if UNITY_EDITOR
+//            //This is just for debugging
+//            stageCount += 1;
+//            eManager.SetName(entity, "Stage count: " + stageCount);
+//#endif
+
+//            //Generic Components
+//            eManager.SetComponentData(entity, new EnemyCount { Value = 0, maxCount = data.enemySpawnData.maxTotalCount });
+//            eManager.SetComponentData(entity, new EnemySpawnSettings { Value = stageID });
+
+        }
+    }
+}

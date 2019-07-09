@@ -13,17 +13,14 @@ MonoBehaviour:
   m_Name: SingleShot
   m_EditorClassIdentifier: 
   projectileName: Default
-  projectilesPerAShot: 1
-  maxDistance: 1000
-  damage: 10
-  speed: 20
+  projectilesPerAShot: 5
+  maxDistance: 184
+  damage: 33
+  speed: 34
   spread:
     minimumSpread: -0.101
     maximumSpread: 0.104
   mesh: {fileID: 2298794039524342105, guid: 98401a8b6f876ed4ebdd395ad4cfccaf, type: 3}
   material: {fileID: 5629084884208175553, guid: 98401a8b6f876ed4ebdd395ad4cfccaf,
     type: 3}
-  componentData:
-  - componentType: 5
-    floatValue: 1
-    intValue: 0
+  componentData: []

@@ -5,11 +5,11 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
+using WDIB.Components;
+using WDIB.Parameters;
 
-public class GameTimeCountSystem : JobComponentSystem
+public class TimerCountSystem : JobComponentSystem
 {
-
-
     [BurstCompile]
     public struct CountDownJob : IJobForEach<CountDownTime>
     {
@@ -32,6 +32,18 @@ public class GameTimeCountSystem : JobComponentSystem
         }
     }
 
+    // This could be way more universal
+    [BurstCompile]
+    public struct TimeBetweenShotsReduceJob : IJobForEach<TimeBetweenShots>
+    {
+        [ReadOnly] public float deltaTime;
+
+        public void Execute([ReadOnly] ref TimeBetweenShots tBS)
+        {
+            tBS.timeLeft -= deltaTime;
+        }
+    }
+
     protected override JobHandle OnUpdate(JobHandle inputDeps)
     {
         float deltaT = Time.deltaTime;
@@ -46,7 +58,12 @@ public class GameTimeCountSystem : JobComponentSystem
             deltaTime = deltaT
         }.Schedule(this, inputDeps);
 
+        JobHandle tbShotsJob = new TimeBetweenShotsReduceJob
+        {
+            deltaTime = deltaT
+        }.Schedule(this, inputDeps);
 
-        return JobHandle.CombineDependencies(inputDeps, countDownJob, countUpJob);
+
+        return JobHandle.CombineDependencies(tbShotsJob, countDownJob, countUpJob);
     }
 }

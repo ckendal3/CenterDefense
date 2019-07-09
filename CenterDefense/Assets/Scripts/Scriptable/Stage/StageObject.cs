@@ -1,20 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WDIB.Parameters;
 
 namespace WDIB.Parameters
 {
     [CreateAssetMenu(fileName = "Stage Data", menuName = "WDIB/Data/Stage")]
-    public class StageData : ScriptableObject
+    public class StageObject : ScriptableObject
     {
-        [Header("Player Spawn Settings")]
-        public PlayerSpawnData playerSpawnData;
-
-        [Header("Enemy Spawn Settings")]
-        public EnemySpawnData enemySpawnData;
-
-        [Header("Stage Multipliers")]
-        public StageMultiplierData multiplierData;
+        public StageData data;
     }
 }
 
@@ -32,4 +26,17 @@ public struct StageMultiplierData
     [Tooltip("Multiplies the speed of enemies.")]
     [Range(1, 10)]
     public float enemySpeedMultiplier;
+}
+
+[System.Serializable]
+public struct StageData
+{
+    [Header("Player Spawn Settings")]
+    public PlayerSpawnData playerSpawnData;
+
+    [Header("Enemy Spawn Settings")]
+    public EnemySpawnData enemySpawnData;
+
+    [Header("Stage Multipliers")]
+    public StageMultiplierData multiplierData;
 }

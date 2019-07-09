@@ -1,52 +1,115 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
+using WDIB.Components;
+using WDIB.Core.States;
 using WDIB.Parameters;
 
 public class Spawner_Mono : MonoBehaviour
 {
+    private StageParameters sParameters;
     private StageData stageData;
-    private int index = 0;
 
+    private StageModeV2 mode;
+
+    private int spawnLimit = 0;
     private int spawnCount = 0;
-    private int maxSpawnCount = 0;
+    private int enemyKillCount = 0;
 
     private float timeTillNextSpawn;
     private float timeBetweenSpawns;
 
     private bool spawnEnemies = true;
 
-    public BoxCollider[] colliders;
+    private BoxCollider[] colliders;
 
-    private void Awake()
+    private void OnEnable()
     {
-        stageData = StageParameters.Instance.stageSet[index];
-        timeBetweenSpawns = stageData.enemySpawnData.enemySpawnRate;
-
-        maxSpawnCount = stageData.enemySpawnData.maxEnemySpawnCount;
+        GameEvents.onGameStatusChange += OnGameStatusChange;
+        GameEvents.onKillEvent += OnEnemyDeath;
     }
 
-    private void Start()
+    private void OnDisable()
     {
+        GameEvents.onGameStatusChange -= OnGameStatusChange;
+        GameEvents.onKillEvent -= OnEnemyDeath;
+    }
+
+    public void Initialize(StageModeV2 gameMode, BoxCollider[] bColliders)
+    {
+        mode = gameMode;
+        colliders = bColliders;
+    }
+
+    private void OnGameStatusChange(GameStateStatusV2 gameStatus)
+    {
+        switch (gameStatus)
+        {
+            case GameStateStatusV2.BetweenRounds:
+                spawnEnemies = false;
+                break;
+            case GameStateStatusV2.StartRound:
+                StartNewStage();
+                break;
+            case GameStateStatusV2.InProgress:
+                spawnEnemies = true;
+                break;
+            case GameStateStatusV2.GameOver:
+                spawnEnemies = false;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// This gathers all the appropriate data and sets it
+    /// </summary>
+    public void StartNewStage()
+    {
+        enemyKillCount = spawnCount = 0;
+
+        stageData = mode.GetDifficultyAdjustedStage();
+
+        timeTillNextSpawn = timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
+
+        spawnLimit = stageData.enemySpawnData.maxTotalCount;
+
+        spawnEnemies = true;
+
         // initial spawn amount
-        SpawnEnemies(stageData.enemySpawnData.initialEnemySpawnAmount, stageData.enemySpawnData);
+        SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
+    }
+
+    private void OnEnemyDeath()
+    {
+        enemyKillCount += 1;
+
+        // if all enemies are dead
+        if(enemyKillCount >= spawnLimit)
+        {
+            GameEvents.onGameStatusChange?.Invoke(GameStateStatusV2.BetweenRounds);
+        }
     }
 
     void Update()
     {
-        timeTillNextSpawn -= Time.deltaTime;
-
-        if(timeTillNextSpawn <= 0 && spawnEnemies == true)
+        if(spawnEnemies == true)
         {
-            timeTillNextSpawn = timeBetweenSpawns;
+            timeTillNextSpawn -= Time.deltaTime;
 
-            SpawnEnemies(stageData.enemySpawnData.enemiesPerASpawn, stageData.enemySpawnData);
+            if (timeTillNextSpawn < 0)
+            {
+                timeTillNextSpawn = timeBetweenSpawns;
+
+                SpawnEnemies(stageData.enemySpawnData.enemiesPerASpawn, stageData.enemySpawnData);
+            }
         }
     }
 
-
     private void SpawnEnemies(int spawnAmount, EnemySpawnData data)
     {
+        Entity entity = Entity.Null; 
+
         GameObject go;
         EnemyData eData;
         MoveRigidbody moveRB;
@@ -55,7 +118,7 @@ public class Spawner_Mono : MonoBehaviour
         for (int i = 0; i < spawnAmount; i++)
         {
             // don't spawn anymore enemies
-            if(spawnCount >= maxSpawnCount)
+            if(spawnCount >= spawnLimit)
             {
                 spawnEnemies = false;
                 return;
@@ -80,7 +143,6 @@ public class Spawner_Mono : MonoBehaviour
             cCollider.radius = .6f;
             cCollider.height = 2.3f;
 
-
             // add health
             go.AddComponent<Health>().MaxHealth = eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier;
             
@@ -100,6 +162,9 @@ public class Spawner_Mono : MonoBehaviour
             moveRB.hitMask = 1 << 10; //LayerMask.NameToLayer("Damageable");
             moveRB.speed = eData.stats.speed * stageData.multiplierData.enemySpeedMultiplier;
             moveRB.hitDistance = 1.2f;
+
+            // entity
+            go.AddComponent<EntityComponent>().Initialize(new EnemyTag { });
         }
     }
 
@@ -129,4 +194,5 @@ public class Spawner_Mono : MonoBehaviour
             Random.Range(bounds.min.z, bounds.max.z)
         );
     }
+
 }
