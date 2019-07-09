@@ -8,7 +8,6 @@ using UnityEngine;
 using WDIB.Components;
 
 [UpdateInGroup(typeof(MovementSystemGroup))]
-[UpdateAfter(typeof(MovementSystem))]
 public class InteractablesSystem : JobComponentSystem
 {
     private EntityQuery m_InputGroup;

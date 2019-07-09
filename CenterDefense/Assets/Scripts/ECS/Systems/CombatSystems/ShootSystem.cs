@@ -8,6 +8,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using WDIB.Components;
+using WDIB.Factory;
 using WDIB.Parameters;
 
 // update after the turrets turn
@@ -54,7 +55,7 @@ public class ShootSystem : JobComponentSystem
                 continue;
             }
 #endif
-            projectileId = WeaponParameters.Instance.weaponSet[weaponComponents[i].weaponID].projectileId;
+            projectileId = WeaponParameters.Instance.GetWeaponDataByID(weaponComponents[i].weaponID).projectileId;
             timeResetValue = tBetweenShots[i].resetValue;
 
             // input isn't down or if not enough time between shots has passed - do nothing
@@ -64,7 +65,7 @@ public class ShootSystem : JobComponentSystem
             }
 
             // create projectile
-            WDIB.Factory.ProjectileFactory.CreateProjectiles(projectileId, positions[i].Value, rotations[i].Value);
+            ProjectileFactory.CreateProjectiles(projectileId, positions[i].Value, rotations[i].Value, 0);
             // Reset time between shots on entity
             eManager.SetComponentData(entities[i], new TimeBetweenShots { resetValue = timeResetValue, timeLeft = timeResetValue });
         }
