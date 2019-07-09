@@ -13,29 +13,32 @@ public class Spawner_Mono : MonoBehaviour
 
     private StageModeV2 mode;
 
-    private int spawnLimit;
-    private int spawnCount;
-
+    private int spawnLimit = 0;
+    private int spawnCount = 0;
     private int enemyKillCount = 0;
-    private int enemyLimit = 0;
 
     private float timeTillNextSpawn;
     private float timeBetweenSpawns;
 
     private bool spawnEnemies = true;
-    private bool inProgress = false;
 
     private BoxCollider[] colliders;
 
-    private void Awake()
+    private void OnEnable()
     {
         GameEvents.onGameStatusChange += OnGameStatusChange;
         GameEvents.onKillEvent += OnEnemyDeath;
     }
 
+    private void OnDisable()
+    {
+        GameEvents.onGameStatusChange -= OnGameStatusChange;
+        GameEvents.onKillEvent -= OnEnemyDeath;
+    }
+
     public void Initialize(StageModeV2 gameMode, BoxCollider[] bColliders)
     {
-        mode = gameMode ;
+        mode = gameMode;
         colliders = bColliders;
     }
 
@@ -44,15 +47,16 @@ public class Spawner_Mono : MonoBehaviour
         switch (gameStatus)
         {
             case GameStateStatusV2.BetweenRounds:
-                inProgress = false;
+                spawnEnemies = false;
                 break;
             case GameStateStatusV2.StartRound:
                 StartNewStage();
                 break;
             case GameStateStatusV2.InProgress:
+                spawnEnemies = true;
                 break;
             case GameStateStatusV2.GameOver:
-                inProgress = false;
+                spawnEnemies = false;
                 break;
         }
     }
@@ -62,16 +66,15 @@ public class Spawner_Mono : MonoBehaviour
     /// </summary>
     public void StartNewStage()
     {
+        enemyKillCount = spawnCount = 0;
+
         stageData = mode.GetDifficultyAdjustedStage();
 
         timeTillNextSpawn = timeBetweenSpawns = stageData.enemySpawnData.spawnRate;
 
-        spawnLimit = enemyLimit = stageData.enemySpawnData.maxTotalCount;
-
-        enemyKillCount = spawnCount = 0;
+        spawnLimit = stageData.enemySpawnData.maxTotalCount;
 
         spawnEnemies = true;
-        inProgress = true;
 
         // initial spawn amount
         SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
@@ -82,7 +85,7 @@ public class Spawner_Mono : MonoBehaviour
         enemyKillCount += 1;
 
         // if all enemies are dead
-        if(enemyKillCount >= enemyLimit)
+        if(enemyKillCount >= spawnLimit)
         {
             GameEvents.onGameStatusChange?.Invoke(GameStateStatusV2.BetweenRounds);
         }
@@ -90,25 +93,21 @@ public class Spawner_Mono : MonoBehaviour
 
     void Update()
     {
-        if(inProgress == false)
+        if(spawnEnemies == true)
         {
-            return;
-        }
+            timeTillNextSpawn -= Time.deltaTime;
 
-        timeTillNextSpawn -= Time.deltaTime;
+            if (timeTillNextSpawn < 0)
+            {
+                timeTillNextSpawn = timeBetweenSpawns;
 
-        if(timeTillNextSpawn <= 0 && spawnEnemies == true)
-        {
-            timeTillNextSpawn = timeBetweenSpawns;
-
-            SpawnEnemies(stageData.enemySpawnData.enemiesPerASpawn, stageData.enemySpawnData);
+                SpawnEnemies(stageData.enemySpawnData.enemiesPerASpawn, stageData.enemySpawnData);
+            }
         }
     }
 
     private void SpawnEnemies(int spawnAmount, EnemySpawnData data)
     {
-        Debug.Log("Spawn enmies");
-
         Entity entity = Entity.Null; 
 
         GameObject go;
@@ -121,7 +120,6 @@ public class Spawner_Mono : MonoBehaviour
             // don't spawn anymore enemies
             if(spawnCount >= spawnLimit)
             {
-                Debug.Log($"Reached spawn limit {spawnLimit}");
                 spawnEnemies = false;
                 return;
             }

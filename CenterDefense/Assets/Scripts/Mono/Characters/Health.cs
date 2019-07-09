@@ -47,13 +47,16 @@ public class Health : MonoBehaviour, IHealth
 
     public void ApplyDamage(float damage)
     {
-        currentHealth -= damage;
-
-        // if dead
-        if (!isAlive)
+        if(isAlive == true)
         {
-            GameEvents.onKillEvent?.Invoke();
-            Destroy(gameObject);
+            currentHealth -= damage;
+
+            // if dead
+            if (isAlive == false)
+            {
+                GameEvents.onKillEvent?.Invoke();
+                Destroy(gameObject);
+            }
         }
     }
 

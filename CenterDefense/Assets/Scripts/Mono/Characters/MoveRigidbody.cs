@@ -97,7 +97,7 @@ public class MoveRigidbody : MonoBehaviour
         }
 
         damageableTransform = closestGO.transform;
-        Debug.Log("Closest Damageable: " + damageableTransform.name);
+        //Debug.Log("Closest Damageable: " + damageableTransform.name);
     }
 
     private void CheckHit()
