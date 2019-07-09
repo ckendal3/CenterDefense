@@ -40,4 +40,6 @@ namespace WDIB.Components
         public int damageDealt; // how much damage the player has given out
         public int damageTaken; // how much damage the player has taken
     }
+
+    public struct EnemyTag : IComponentData { }
 }

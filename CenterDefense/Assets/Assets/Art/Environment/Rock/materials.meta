@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:CenterDefense/Assets/Scripts/Core/States.meta
-guid: 4d78b3f2252accf46b1fed1d639342d7
-=======
-guid: 375948c3f2a6b5043bdc3303089f1b35
->>>>>>> master:CenterDefense/Assets/Assets/Art/Environment/Rock/materials.meta
+guid: 46edb2126fa6fdb468a717939018af14
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<< HEAD:CenterDefense/Assets/Scripts/Core/GameMode.meta
-guid: f3aad00634fd49b4caf0cb06151b300b
-=======
-guid: 15ce575167de4a841a1d6c21b259be6d
->>>>>>> master:CenterDefense/Assets/Assets/Art/Environment/Rock.meta
+guid: 43da44b045eaa1543b5cd0417f35233e
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
