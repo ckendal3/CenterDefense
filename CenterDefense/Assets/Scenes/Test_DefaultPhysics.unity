@@ -1433,6 +1433,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaximumHealth: 250
+  team: 1
   currentHealth: 100
 --- !u!135 &706174004
 SphereCollider:
@@ -1750,6 +1751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaximumHealth: 200
+  team: 1
   currentHealth: 100
 --- !u!135 &914135704
 SphereCollider:

@@ -80,8 +80,13 @@ public class Spawner_Mono : MonoBehaviour
         SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
     }
 
-    private void OnEnemyDeath()
+    private void OnEnemyDeath(Team team)
     {
+        if(team != Team.Enemy)
+        {
+            return;
+        }
+
         enemyKillCount += 1;
 
         // if all enemies are dead
@@ -115,6 +120,7 @@ public class Spawner_Mono : MonoBehaviour
         MoveRigidbody moveRB;
         DamageObject dmObject;
         CapsuleCollider cCollider;
+        Health health;
         for (int i = 0; i < spawnAmount; i++)
         {
             // don't spawn anymore enemies
@@ -144,7 +150,9 @@ public class Spawner_Mono : MonoBehaviour
             cCollider.height = 2.3f;
 
             // add health
-            go.AddComponent<Health>().MaxHealth = eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier;
+            health = go.AddComponent<Health>();
+            health.MaxHealth = eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier;
+            health.team = Team.Enemy;
             
             // Freeze rigidbody
             go.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
