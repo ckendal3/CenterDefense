@@ -18,7 +18,7 @@ public class GameData : MonoBehaviour
 #if UNITY_EDITOR
         ApplyDefaultStage();
 #else
-        ApplyNewStageData();
+        ApplyNewStageData(stageIndex);
 #endif
     }
 

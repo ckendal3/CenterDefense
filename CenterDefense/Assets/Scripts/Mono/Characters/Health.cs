@@ -17,6 +17,9 @@ public class Health : MonoBehaviour, IDamageable
     [SerializeField]
     public float MaximumHealth = 100;
 
+    [SerializeField]
+    public Team team = Team.Neutral;
+
     public float MaxHealth
     {
         set
@@ -54,7 +57,7 @@ public class Health : MonoBehaviour, IDamageable
             // if dead
             if (isAlive == false)
             {
-                GameEvents.onKillEvent?.Invoke();
+                GameEvents.onKillEvent?.Invoke(team);
                 Destroy(gameObject);
             }
         }
