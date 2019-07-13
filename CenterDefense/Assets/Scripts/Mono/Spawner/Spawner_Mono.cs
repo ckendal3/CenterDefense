@@ -80,9 +80,9 @@ public class Spawner_Mono : MonoBehaviour
         SpawnEnemies(stageData.enemySpawnData.initialSpawnCount, stageData.enemySpawnData);
     }
 
-    private void OnEnemyDeath(Team team)
+    private void OnEnemyDeath(TeamOrientation team)
     {
-        if(team != Team.Enemy)
+        if(team != TeamOrientation.Enemy)
         {
             return;
         }
@@ -120,7 +120,6 @@ public class Spawner_Mono : MonoBehaviour
         MoveRigidbody moveRB;
         DamageObject dmObject;
         CapsuleCollider cCollider;
-        Health health;
         for (int i = 0; i < spawnAmount; i++)
         {
             // don't spawn anymore enemies
@@ -149,10 +148,9 @@ public class Spawner_Mono : MonoBehaviour
             cCollider.radius = .6f;
             cCollider.height = 2.3f;
 
-            // add health
-            health = go.AddComponent<Health>();
-            health.MaxHealth = eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier;
-            health.team = Team.Enemy;
+            // add health and team
+            go.AddComponent<HealthWrapper>().health = new Health(eData.stats.health * stageData.multiplierData.enemyDifficultyMultiplier);
+            go.AddComponent<TeamWrapper>().team = new Team(TeamOrientation.Enemy);
             
             // Freeze rigidbody
             go.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;

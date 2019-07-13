@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: Remove this class and all references
 public class SpawnSimulator : MonoBehaviour
 {
     private Health health;
@@ -24,7 +25,7 @@ public class SpawnSimulator : MonoBehaviour
 
         gameObject.transform.localScale = new Vector3(rScale, rScale, rScale);
 
-        health.MaxHealth *= rScale;
+        Debug.LogError($"Remove this component on {gameObject.name}");
 
         mRB.speed = 4 - rScale;
     }

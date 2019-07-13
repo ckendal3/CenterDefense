@@ -67,8 +67,9 @@ namespace WDIB.Factory
                 cCollider.radius = .6f;
                 cCollider.height = 2.3f;
 
-                // add health
-                go.AddComponent<Health>().MaxHealth = eData.stats.health * data.multiplierData.enemyDifficultyMultiplier;
+                // add health and team
+                go.AddComponent<HealthWrapper>().health = new Health(eData.stats.health * data.multiplierData.enemyDifficultyMultiplier);
+                go.AddComponent<TeamWrapper>().team = new Team(TeamOrientation.Enemy);
 
                 // Freeze rigidbody
                 go.AddComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;
