@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using WDIB.Interfaces;
 
 [RequireComponent(typeof(MoveRigidbody))]
 public class DamageObject : MonoBehaviour

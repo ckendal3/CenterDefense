@@ -3,6 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 using WDIB.Components;
 using WDIB.Factory;
+using WDIB.Interfaces;
 using WDIB.Parameters;
 using WDIB.Systems;
 
