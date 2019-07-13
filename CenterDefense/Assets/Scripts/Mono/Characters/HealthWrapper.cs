@@ -1,16 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 using UnityEngine;
-
-public interface IDamageable
-{
-    bool isAlive { get; }
-
-    bool ApplyDamage(float damage);
-
-    void ApplyHealing(float healthRestore);
-}
+using WDIB.Interfaces;
 
 public class HealthWrapper : MonoBehaviour
 {
@@ -22,10 +12,11 @@ public class Health : IDamageable
     public Health(float value)
     {
         MaxHealth = value;
+        currentHealth = value;
     }
 
-    protected readonly float MaxHealth = 100f;
-    protected float currentHealth = 100;
+    protected readonly float MaxHealth;
+    protected float currentHealth;
 
     /// <summary>
     /// Return if the player is Alive based on the current health
