@@ -2,6 +2,14 @@
 using UnityEngine;
 using WDIB.Interfaces;
 
+// TODO: Add the onKillEvent in a higher class such as a controller class? (Would have to make it)
+// if dead
+// moving out of here
+//if (isAlive == false)
+//{
+//    GameEvents.onKillEvent?.Invoke(team);
+//}
+
 public class HealthWrapper : MonoBehaviour
 {
     public Health health;
@@ -24,21 +32,34 @@ public class Health : IDamageable
     public bool isAlive => currentHealth > 0;
 
     /// <summary>
-    /// Apply damage by passing in a float value
+    /// 
     /// </summary>
     /// <param name="value"></param>
-    /// <returns> Returns true if the entity is still alive </returns>
+    /// <returns>  </returns>
+
+    /// <summary>
+    /// Apply damage by passing in a float value
+    /// </summary>
+    /// <param name="value"> The damage amount to apply </param>
+    /// <param name="newHealth"> The new health value of the entity</param>
+    /// <returns>Returns true if the entity is still alive </returns>
     public bool ApplyDamage(float value)
     {
         currentHealth -= value;
+        return isAlive;
+    }
 
-        // if dead
-        // moving out of here
-        //if (isAlive == false)
-        //{
-        //    GameEvents.onKillEvent?.Invoke(team);
-        //}
+    /// <summary>
+    /// Apply damage by passing in a float value
+    /// </summary>
+    /// <param name="value"> The damage amount to apply </param>
+    /// <param name="newHealth"> The new health value of the entity</param>
+    /// <returns>Returns true if the entity is still alive </returns>
+    public bool ApplyDamageGetNewHealth(float value, out float newHealth)
+    {
+        currentHealth -= value;
 
+        newHealth = currentHealth;
         return isAlive;
     }
 
